@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "WNfXXl5F3ryp766XPlXl49hptwKPRZrjrf2mLx1na/0MAZ8A50mLZIXjwM/J/Y5kqk6JpQDjSEkgrfkz1TD0nQ==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\gabee\\source\\repos\\agar.io\\Model\\Model\\Model.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\gabee\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\3.1.3\\microsoft.extensions.logging.abstractions.3.1.3.nupkg.sha512"
+  ],
+  "logs": []
+}

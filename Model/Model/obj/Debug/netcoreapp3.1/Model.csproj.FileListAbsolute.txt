@@ -1,0 +1,8 @@
+C:\Users\gabee\source\repos\agar.io\Model\Model\bin\Debug\netcoreapp3.1\Model.deps.json
+C:\Users\gabee\source\repos\agar.io\Model\Model\bin\Debug\netcoreapp3.1\Model.dll
+C:\Users\gabee\source\repos\agar.io\Model\Model\bin\Debug\netcoreapp3.1\FileLogger.dll
+C:\Users\gabee\source\repos\agar.io\Model\Model\bin\Debug\netcoreapp3.1\FileLogger.pdb
+C:\Users\gabee\source\repos\agar.io\Model\Model\obj\Debug\netcoreapp3.1\Model.csprojAssemblyReference.cache
+C:\Users\gabee\source\repos\agar.io\Model\Model\obj\Debug\netcoreapp3.1\Model.AssemblyInfoInputs.cache
+C:\Users\gabee\source\repos\agar.io\Model\Model\obj\Debug\netcoreapp3.1\Model.AssemblyInfo.cs
+C:\Users\gabee\source\repos\agar.io\Model\Model\obj\Debug\netcoreapp3.1\Model.csproj.CopyComplete
