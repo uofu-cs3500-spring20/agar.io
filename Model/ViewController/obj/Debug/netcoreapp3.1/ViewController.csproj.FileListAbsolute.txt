@@ -1,0 +1,13 @@
+C:\Users\gabee\source\repos\agar.io\Model\ViewController\bin\Debug\netcoreapp3.1\ViewController.exe
+C:\Users\gabee\source\repos\agar.io\Model\ViewController\bin\Debug\netcoreapp3.1\ViewController.deps.json
+C:\Users\gabee\source\repos\agar.io\Model\ViewController\bin\Debug\netcoreapp3.1\ViewController.runtimeconfig.json
+C:\Users\gabee\source\repos\agar.io\Model\ViewController\bin\Debug\netcoreapp3.1\ViewController.runtimeconfig.dev.json
+C:\Users\gabee\source\repos\agar.io\Model\ViewController\bin\Debug\netcoreapp3.1\ViewController.dll
+C:\Users\gabee\source\repos\agar.io\Model\ViewController\bin\Debug\netcoreapp3.1\ViewController.pdb
+C:\Users\gabee\source\repos\agar.io\Model\ViewController\obj\Debug\netcoreapp3.1\ViewController.csprojAssemblyReference.cache
+C:\Users\gabee\source\repos\agar.io\Model\ViewController\obj\Debug\netcoreapp3.1\ViewController.csproj.CoreCompileInputs.cache
+C:\Users\gabee\source\repos\agar.io\Model\ViewController\obj\Debug\netcoreapp3.1\ViewController.AssemblyInfoInputs.cache
+C:\Users\gabee\source\repos\agar.io\Model\ViewController\obj\Debug\netcoreapp3.1\ViewController.AssemblyInfo.cs
+C:\Users\gabee\source\repos\agar.io\Model\ViewController\obj\Debug\netcoreapp3.1\ViewController.dll
+C:\Users\gabee\source\repos\agar.io\Model\ViewController\obj\Debug\netcoreapp3.1\ViewController.pdb
+C:\Users\gabee\source\repos\agar.io\Model\ViewController\obj\Debug\netcoreapp3.1\ViewController.genruntimeconfig.cache

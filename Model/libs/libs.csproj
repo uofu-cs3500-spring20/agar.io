@@ -4,4 +4,13 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Reference Include="Networking">
+      <HintPath>..\..\..\..\..\Downloads\server\publish\Networking.dll</HintPath>
+    </Reference>
+    <Reference Include="Server">
+      <HintPath>..\..\..\..\..\Downloads\server\publish\Server.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

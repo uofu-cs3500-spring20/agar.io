@@ -6,3 +6,9 @@ C:\Users\gabee\source\repos\agar.io\Model\Model\obj\Debug\netcoreapp3.1\Model.cs
 C:\Users\gabee\source\repos\agar.io\Model\Model\obj\Debug\netcoreapp3.1\Model.AssemblyInfoInputs.cache
 C:\Users\gabee\source\repos\agar.io\Model\Model\obj\Debug\netcoreapp3.1\Model.AssemblyInfo.cs
 C:\Users\gabee\source\repos\agar.io\Model\Model\obj\Debug\netcoreapp3.1\Model.csproj.CopyComplete
+C:\Users\gabee\source\repos\agar.io\Model\Model\bin\Debug\netcoreapp3.1\Model.pdb
+C:\Users\gabee\source\repos\agar.io\Model\Model\bin\Debug\netcoreapp3.1\libs.dll
+C:\Users\gabee\source\repos\agar.io\Model\Model\bin\Debug\netcoreapp3.1\libs.pdb
+C:\Users\gabee\source\repos\agar.io\Model\Model\obj\Debug\netcoreapp3.1\Model.csproj.CoreCompileInputs.cache
+C:\Users\gabee\source\repos\agar.io\Model\Model\obj\Debug\netcoreapp3.1\Model.dll
+C:\Users\gabee\source\repos\agar.io\Model\Model\obj\Debug\netcoreapp3.1\Model.pdb
