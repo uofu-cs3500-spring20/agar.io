@@ -6,4 +6,19 @@
     <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\libs\libs.csproj" />
+    <ProjectReference Include="..\Model\Model.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Networking">
+      <HintPath>..\..\..\..\..\Downloads\TankWarsServer\TankWarsServer\Networking.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

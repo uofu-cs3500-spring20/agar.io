@@ -1,11 +1,30 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Drawing;
 using System.Numerics;
 
 namespace Agario
 {
-    public interface Circle
+    public class Circle
     {
+        public Circle() { }
+        [JsonConstructor]
+        public Circle(string name, int id, Vector2 loc, double mass, float argb_color, float belongs_to, int type)
+        {
+            NAME = name;
+            ID = id;
+            LOC = loc;
+            MASS = mass;
+            ARGB_COLOR = argb_color;
+            BELONGS_TO = belongs_to;
+            TYPE = type;
+            RADIUS = (float)MASS / 2;
+        }
+
+        public float RADIUS
+        {
+            get; set;
+        }
         public string NAME
         {
             get; set;
@@ -16,30 +35,29 @@ namespace Agario
             get; set;
         }
 
-        public Vector2 POSITIONS
+        public Vector2 LOC
         {
             get; set;
         }
 
-        public int MASS
+        public double MASS
         {
             get; set;
         }
 
-        public Color COLOR
+        public float ARGB_COLOR
+        {
+
+            get; set;
+        }
+        public float BELONGS_TO
         {
             get; set;
         }
-
         public int TYPE
         {
             get; set;
         }
-        public float RADIUS
-        {
-            get; set;
-        }
-
         public bool ISPLAYER
         {
             get; set;

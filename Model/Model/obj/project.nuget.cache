@@ -1,10 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "W02j94uQfeu5yL9zxzhguZwj3jp/xZaZvJnfAhuqibZs1hq5N0+T6HVh6zpCbphtzGLyGnzPAjW5Gs7sQmFa1Q==",
+  "dgSpecHash": "5yDuwxbPn8F1j+lpaILkqJMfPG2JbdvcAmY1lf2iccsoQQV2BSdxSAQ/72wk+cYWXMpzXsDuJXHyHphcePCPxA==",
   "success": true,
   "projectFilePath": "C:\\Users\\gabee\\source\\repos\\agar.io\\Model\\Model\\Model.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\gabee\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\3.1.3\\microsoft.extensions.logging.abstractions.3.1.3.nupkg.sha512"
+    "C:\\Users\\gabee\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\3.1.3\\microsoft.extensions.logging.abstractions.3.1.3.nupkg.sha512",
+    "C:\\Users\\gabee\\.nuget\\packages\\newtonsoft.json\\12.0.3\\newtonsoft.json.12.0.3.nupkg.sha512"
   ],
   "logs": []
 }

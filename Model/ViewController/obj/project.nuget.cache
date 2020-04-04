@@ -1,8 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "Vxx4ekkLA8RJ2gBovWxoCcPs5nPGWKaFfHiEgD130e7zX7pIwHBKtkhrtVlGzyUpc39VL9v/Rsgu+uOkXCJO7g==",
+  "dgSpecHash": "C7QsxGi+J4ET7TyOx45LFsYMxT4sec8jc3HD6WVh6xSnXFvxzA6KP6sr3UKi0tPRfzbGPSF98STnp/bmMBfulQ==",
   "success": true,
   "projectFilePath": "C:\\Users\\gabee\\source\\repos\\agar.io\\Model\\ViewController\\ViewController.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\gabee\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\3.1.3\\microsoft.extensions.logging.abstractions.3.1.3.nupkg.sha512",
+    "C:\\Users\\gabee\\.nuget\\packages\\newtonsoft.json\\12.0.3\\newtonsoft.json.12.0.3.nupkg.sha512"
+  ],
   "logs": []
 }

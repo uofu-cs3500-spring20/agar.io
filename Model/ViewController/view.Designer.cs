@@ -1,4 +1,6 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace ViewController
 {
@@ -74,6 +76,8 @@ namespace ViewController
                 Size = new System.Drawing.Size(70,30)
             };
             connectbutton.Location = new System.Drawing.Point(50,25);
+            this.box.Controls.Add(connectbutton);
+
             box.FlatStyle = FlatStyle.Popup;
             
             //Add groups to control
@@ -82,14 +86,33 @@ namespace ViewController
             Controls.Add(drawingpanel);
 
             //Add items to groups
+
+            //IPADDRESS
             box.Controls.Add(ipaddress);
+            ipaddress.Size = new System.Drawing.Size(100,70);
+            ipaddress.Text = "127.0.0.1";
+            ipaddress.Location = new System.Drawing.Point(130,31);
+            this.ipaddress.TextChanged += new EventHandler(IPAddress_TextChanged);
             box.Controls.Add(ipaddresslabel);
-            box.Controls.Add(port);
-            box.Controls.Add(portlabel);
+
+
+            //NAME
             box.Controls.Add(name);
+
+            name.Size = new System.Drawing.Size(100, 70);
+            name.Location = new System.Drawing.Point(450, 31);
             box.Controls.Add(namelabel);
 
+
+
             status.Controls.Add(fps);
+
+            fps.Location = new Point(750,100);
+            fps.Size = new Size(100,100);
+            fps.Text = "FPS: ";
+            fps.Visible = true;
+            fps.ForeColor = Color.Red;
+            fps.Show();
             status.Controls.Add(ms);
             status.Controls.Add(mass);
 
@@ -99,26 +122,39 @@ namespace ViewController
             this.ClientSize = new System.Drawing.Size(1000, 900);
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "agar.io";
+            this.status.SuspendLayout();
             this.box.SuspendLayout();
             this.SuspendLayout();
 
 
 
-            this.box.Controls.Add(connectbutton);
             this.box.Location = new System.Drawing.Point(10, 0);
             this.box.Name = "box";
             this.box.Size = new System.Drawing.Size(980, 70);
             this.box.TabIndex = 0;
             this.box.TabStop = false;
             connectbutton.Enabled = true;
+            this.connectbutton.MouseClick += new MouseEventHandler(ConnectButton_Click);
 
 
+            this.status.Location = new System.Drawing.Point(700,60);
+            this.status.Size = new System.Drawing.Size(290,900);
 
-            this.status.Location = new System.Drawing.Point(900,400);
+
+            this.drawingpanel.Location = new System.Drawing.Point(10,70);
+            this.drawingpanel.Size = new System.Drawing.Size(690,800);
+            this.drawingpanel.BackColor = Color.Black;
+            
         }
+
      
-        
-        
+
+
+
+
+
+
+
         #endregion
 
 

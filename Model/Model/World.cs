@@ -11,24 +11,26 @@ namespace Model
 
     public class World
     {
-        public int WORLDSIZE
-        {
-            get; private set;
-        }
+        public int WORLDSIZE;
         public Vector2[] CORNERS
         {
             get; private set;
+
+            
         }
 
         public Dictionary<int, Player> Players;
         public Dictionary<int, Food> Food;
         public Dictionary<int, Heartbeat> Heartbeat;
-
+        public Dictionary<int, Circle> circles;
 
         ILogger logger;
+        public int playerID;
+
         public World() { }
         public World(ILogger logger, Dictionary<int, Player> Players,Dictionary<int,Food> Food)
         {
+           
             this.logger = logger;
             this.Players = Players;
             this.Food = Food;

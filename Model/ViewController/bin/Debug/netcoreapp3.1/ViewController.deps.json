@@ -7,8 +7,53 @@
   "targets": {
     ".NETCoreApp,Version=v3.1": {
       "ViewController/1.0.0": {
+        "dependencies": {
+          "Model": "1.0.0",
+          "Newtonsoft.Json": "12.0.3",
+          "libs": "1.0.0",
+          "Networking": "1.0.0.0"
+        },
         "runtime": {
           "ViewController.dll": {}
+        }
+      },
+      "Microsoft.Extensions.Logging.Abstractions/3.1.3": {
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Extensions.Logging.Abstractions.dll": {
+            "assemblyVersion": "3.1.3.0",
+            "fileVersion": "3.100.320.12802"
+          }
+        }
+      },
+      "Newtonsoft.Json/12.0.3": {
+        "runtime": {
+          "lib/netstandard2.0/Newtonsoft.Json.dll": {
+            "assemblyVersion": "12.0.0.0",
+            "fileVersion": "12.0.3.23909"
+          }
+        }
+      },
+      "libs/1.0.0": {
+        "runtime": {
+          "libs.dll": {}
+        }
+      },
+      "Model/1.0.0": {
+        "dependencies": {
+          "Microsoft.Extensions.Logging.Abstractions": "3.1.3",
+          "Newtonsoft.Json": "12.0.3",
+          "libs": "1.0.0"
+        },
+        "runtime": {
+          "Model.dll": {}
+        }
+      },
+      "Networking/1.0.0.0": {
+        "runtime": {
+          "Networking.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
         }
       }
     }
@@ -16,6 +61,35 @@
   "libraries": {
     "ViewController/1.0.0": {
       "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Microsoft.Extensions.Logging.Abstractions/3.1.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-j6r0E+OVinD4s13CIZASYJLLLApStb1yh5Vig7moB2FE1UsMRj4TYJ/xioDjreVA0dyOFpbWny1/n2iSJMbmNg==",
+      "path": "microsoft.extensions.logging.abstractions/3.1.3",
+      "hashPath": "microsoft.extensions.logging.abstractions.3.1.3.nupkg.sha512"
+    },
+    "Newtonsoft.Json/12.0.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-6mgjfnRB4jKMlzHSl+VD+oUc1IebOZabkbyWj2RiTgWwYPPuaK1H97G1sHqGwPlS5npiF5Q0OrxN1wni2n5QWg==",
+      "path": "newtonsoft.json/12.0.3",
+      "hashPath": "newtonsoft.json.12.0.3.nupkg.sha512"
+    },
+    "libs/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Model/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Networking/1.0.0.0": {
+      "type": "reference",
       "serviceable": false,
       "sha512": ""
     }
