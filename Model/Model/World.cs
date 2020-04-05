@@ -19,8 +19,8 @@ namespace Model
             
         }
 
-        public Dictionary<int, Player> Players;
-        public Dictionary<int, Food> Food;
+        public Dictionary<int, Circle> Players;
+        public Dictionary<int, Circle> Food;
         public Dictionary<int, Heartbeat> Heartbeat;
         public Dictionary<int, Circle> circles;
 
@@ -28,7 +28,7 @@ namespace Model
         public int playerID;
 
         public World() { }
-        public World(ILogger logger, Dictionary<int, Player> Players,Dictionary<int,Food> Food)
+        public World(ILogger logger, Dictionary<int, Circle> Players,Dictionary<int,Circle> Food)
         {
            
             this.logger = logger;
@@ -42,7 +42,7 @@ namespace Model
             CORNERS[3] = new Vector2(5000, 5000);
 
         }
-        public World(ILogger logger, int worldsize, Dictionary<int, Player> Players, Dictionary<int,Food> Food)
+        public World(ILogger logger, int worldsize, Dictionary<int, Circle> Players, Dictionary<int,Circle> Food)
         {
             this.logger = logger;
             this.Players = Players;

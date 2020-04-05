@@ -68,36 +68,16 @@ namespace Agario
     }
     public class Food : Circle
     {
-        public string NAME { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public Vector2 POSITIONS { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public int MASS { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public bool ISPLAYER { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public int ID { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public Color COLOR { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public int TYPE { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public float RADIUS { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+       public Food() { }
     }
     public class Player : Circle
     {
-        public string NAME { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public Vector2 POSITIONS { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public int MASS { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public bool ISPLAYER { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public int ID { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public Color COLOR { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public int TYPE { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public float RADIUS { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public Player() { ISPLAYER = true; }
+        
     }
 
     public class Heartbeat : Circle
     {
-        public string NAME { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public int ID { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public Vector2 POSITIONS { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public int MASS { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public Color COLOR { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public int TYPE { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public float RADIUS { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public bool ISPLAYER { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+       public Heartbeat() { }
     }
 }

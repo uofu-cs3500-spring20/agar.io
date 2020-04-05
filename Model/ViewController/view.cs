@@ -17,19 +17,20 @@ namespace ViewController
 {
     public partial class view : Form
     {
-        private SocketState server;
+        private static SocketState server;
         private string username;
         private World world;
         private bool failedConnect;
         private string failedMsg;
-
-
+        private float playerID;
+        private StringBuilder commandlist;
 
         public delegate void ServerUpdateHandler();
         private event ServerUpdateHandler DataArrived;
 
         public view()
         {
+            commandlist = new StringBuilder();
             world = new World();
             RegisterServerUpdate(Frame);
             InitializeComponent();
@@ -39,10 +40,10 @@ namespace ViewController
 
         private void Frame()
         {
-           
+
             try
             {
-                MethodInvoker m = new MethodInvoker(()=> {Refresh(); });
+                MethodInvoker m = new MethodInvoker(() => { Invalidate(); });
                 Invoke(m);
             }
             catch { }
@@ -55,16 +56,17 @@ namespace ViewController
 
         private void ConnectToServer(string ip, string name)
         {
-            username = name + '\n';
-            Networking.ConnectToServer(OnConnect, ip, 11000);
+            drawingpanel.BackColor = Color.Transparent;
             
+            Networking.ConnectToServer(OnConnect, ip, 11000);
+           
 
         }
 
         public void OnConnect(SocketState state)
         {
-           
-            
+
+
             if (state.ErrorOccured)
             {
                 failedConnect = true;
@@ -72,37 +74,10 @@ namespace ViewController
                 return;
             }
             server = state;
-            server.CallMe = InitialReceive;
+            server.CallMe = AwaitData;
 
-            Networking.Send(server.TheSocket, username);
+            Networking.Send(server.TheSocket, username + '\n');
             Networking.GetData(server);
-        }
-
-        private void InitialReceive(SocketState obj)
-        {
-            drawingpanel.BackColor = Color.Transparent;
-
-            string totalData = server.GetData();
-            string[] parts = Regex.Split(totalData, @"(?<=[\n])");
-            Dictionary<int, Circle> circles = new Dictionary<int, Circle>();
-            if (!server.ErrorOccured)
-            {
-                try
-                {
-                    foreach (string s in parts)
-                    {
-                        if (s.Length > 1)
-                        {
-                            Circle circle = JsonConvert.DeserializeObject<Circle>(s);
-                            circles.Add(circle.ID, circle);
-                        }
-                    }
-                }
-                catch { }
-                server.CallMe = AwaitData;
-                Networking.GetData(server);
-
-            }
         }
 
         private void AwaitData(SocketState state)
@@ -111,8 +86,8 @@ namespace ViewController
             string totalData = server.GetData();
             string[] parts = Regex.Split(totalData, @"(?<=[\n])");
 
-            Dictionary<int, Player> players = new Dictionary<int, Player>();
-            Dictionary<int, Food> pows = new Dictionary<int, Food>();
+            Dictionary<int, Circle> players = new Dictionary<int, Circle>();
+            Dictionary<int, Circle> food = new Dictionary<int, Circle>();
             Dictionary<int, Circle> circles = new Dictionary<int, Circle>();
 
             try
@@ -136,11 +111,26 @@ namespace ViewController
                         //Begin deserializing the server's messages, while adding them to lists to be passed along
                         Circle circle = JsonConvert.DeserializeObject<Circle>(message);
 
-                        if(!(circle is null))
-                         circles?.Add(circle.ID, circle);
+                        if (!(circle is null))
+                        {
+                            if (circle.TYPE == 0)
+                            {
+                                food?.Add(circle.ID, circle);
+                            }
+                            else if (circle.TYPE == 1)
+                            {
+                                circle.ISPLAYER = true;
+                                players?.Add(circle.ID, circle);
+                                if (circle.NAME.Equals(username))
+                                {
+                                    playerID = circle.ID;
+                                }
+                            }else if(circle.TYPE == 2)
+                            {
+                                circles.Add(circle.ID,circle);
+                            }
 
-
-
+                        }
 
                     }
 
@@ -148,9 +138,10 @@ namespace ViewController
             }
             catch { }
             //Pass all of the lists to the world to process further
-            world.circles = circles;
-            DataArrived();
+            world.Players = players;
+            world.Food = food;
             Networking.GetData(server);
+            DataArrived();
         }
         public void RegisterServerUpdate(ServerUpdateHandler handler)
         {
@@ -164,23 +155,73 @@ namespace ViewController
         }
 
 
-        public void SendData(SocketState state)
-        {
-
-        }
+       
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            //Invalidate();
-            if (!(world?.circles is null))
+
+            Rectangle r = drawingpanel.ClientRectangle;
+            float centerx = r.Width / 2;
+            float centrey = r.Height / 2;
+
+            if (!(world.Players is null))
+            {
+                world.Players.TryGetValue((int)playerID, out Circle player);
+                int playerX = (int)player.LOC.X;
+                int playerY = (int)player.LOC.Y;
+                e.Graphics.TranslateTransform(-(playerX - centerx), -(playerY - centrey)); 
+                e.Graphics.DrawRectangle(new Pen(Color.Black, 2), new Rectangle(5000, 5000, 5000, 5000));
+                
+
+                var argb = 0;
+
+                Font f = new Font(FontFamily.GenericSansSerif, 10);
+                argb = Convert.ToInt32(player.ARGB_COLOR);
+
+                Color col = Color.FromArgb(argb);
+                using Pen pen = new Pen(col);
+                Brush b = pen.Brush;
+                Brush d = Brushes.Black;
+                Point p = new Point((int)playerX, (int)playerY);
+                e.Graphics.FillEllipse(b, new Rectangle(p, new Size((int)player.RADIUS, (int)player.RADIUS)));
+                e.Graphics.DrawString(username + $" : {playerX}, {playerY}", f, d, new PointF(playerX, playerY));
+
+
+                DrawFood(e, p);
+                DrawPlayers(e, p);
+            }
+            base.OnPaint(e);
+        }
+        public void DrawPlayers(PaintEventArgs e, Point point)
+        {
+            var argb = 0;
+
+            foreach (Circle player in world.Players.Values)
             {
 
+                Font f = new Font(FontFamily.GenericSansSerif, 10);
+                argb = Convert.ToInt32(player.ARGB_COLOR);
 
-              
+                Color col = Color.FromArgb(argb);
+                using Pen pen = new Pen(col);
+                Brush b = pen.Brush;
+                Brush d = Brushes.Black;
+                Point p = new Point((int)player.LOC.X, (int)player.LOC.Y);
+                e.Graphics.FillEllipse(b, new Rectangle(p, new Size((int)player.RADIUS, (int)player.RADIUS)));
+                e.Graphics.DrawString(username + $" : {player.LOC.X}, {player.LOC.Y}", f, d, new PointF(player.LOC.X, player.LOC.Y));
+
+            }
+        }
+        public void DrawFood(PaintEventArgs e, Point point)
+        {
+
+
+            if (!(world?.Food is null))
+            {
                 var argb = 0;
-                double X;
-                double Y;
-                foreach (Circle c in world.circles.Values)
+
+                Font f = new Font(FontFamily.GenericSansSerif, 10);
+                foreach (Circle c in world.Food.Values)
                 {
                     argb = Convert.ToInt32(c.ARGB_COLOR);
 
@@ -189,15 +230,15 @@ namespace ViewController
                     Brush b = pen.Brush;
                     Point p = new Point((int)c.LOC.X, (int)c.LOC.Y);
 
-                    if(p.X < )
-                    e.Graphics.FillEllipse(b,new Rectangle(p,new Size((int)c.RADIUS,(int)c.RADIUS)));
-                  
-                   
+                    if ((p.X > (point.X - 399) && p.X < (point.X + 399)) && (p.Y > point.Y - 399 && p.Y < point.Y + 399))
+                    {
+                        e.Graphics.FillEllipse(b, new Rectangle(p, new Size((int)c.RADIUS, (int)c.RADIUS)));
+                        e.Graphics.DrawString($"{p.X}, {p.Y}", f, b, p);
+                    }
+
 
                 }
-
             }
-            base.OnPaint(e);
         }
 
 
@@ -205,16 +246,33 @@ namespace ViewController
         {
 
         }
+        private void On_Move(object sender, MouseEventArgs e)
+        {
+            if (e.X != 0 && e.Y != 0 && !(server is null) && !(world.Players is null))
+            {
+                float mouseX = e.X;
+                float mouseY = e.Y;
+                world.Players.TryGetValue((int)playerID, out Circle player);
+                int x = (int)player.LOC.X;
+                int y = (int)player.LOC.Y;
+                string message = $"(move,{-20},{3})";
+                Networking.Send(server.TheSocket,message);
+            }
 
+
+        }
 
         private void ConnectButton_Click(object sender, MouseEventArgs e)
         {
-            ConnectToServer(ipaddress.Text, name.Text);
+            username = name.Text;
+            ConnectToServer(ipaddress.Text, name.Text + '\n');
+            connectbutton.Enabled = false;
+
         }
 
         private void IPAddress_TextChanged(object sender, EventArgs e)
         {
-           // throw new NotImplementedException();
+            // throw new NotImplementedException();
         }
 
 

@@ -137,17 +137,25 @@ namespace ViewController
             this.connectbutton.MouseClick += new MouseEventHandler(ConnectButton_Click);
 
 
-            this.status.Location = new System.Drawing.Point(700,60);
-            this.status.Size = new System.Drawing.Size(290,900);
-
+            this.status.Location = new System.Drawing.Point(810,60);
+            this.status.Size = new System.Drawing.Size(180,900);
+            
 
             this.drawingpanel.Location = new System.Drawing.Point(10,70);
-            this.drawingpanel.Size = new System.Drawing.Size(690,800);
-            this.drawingpanel.BackColor = Color.Black;
+            this.drawingpanel.Size = new System.Drawing.Size(804,804);
+            this.drawingpanel.MouseMove += new MouseEventHandler(On_Move);
+           
+            this.drawingpanel.BorderStyle = BorderStyle.Fixed3D;
+            
+
+            this.AutoScaleMode = AutoScaleMode.Dpi;
+            this.DoubleBuffered = true;
             
         }
 
      
+
+
 
 
 
