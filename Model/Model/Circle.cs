@@ -9,7 +9,7 @@ namespace Agario
     {
         public Circle() { }
         [JsonConstructor]
-        public Circle(string name, int id, Vector2 loc, double mass, float argb_color, float belongs_to, int type)
+        public Circle(string name, int id, Vector2 loc, double mass, float argb_color, int belongs_to, int type)
         {
             NAME = name;
             ID = id;
@@ -50,7 +50,7 @@ namespace Agario
 
             get; set;
         }
-        public float BELONGS_TO
+        public int BELONGS_TO
         {
             get; set;
         }

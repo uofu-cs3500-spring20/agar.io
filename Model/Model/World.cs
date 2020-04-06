@@ -27,7 +27,7 @@ namespace Model
         ILogger logger;
         public int playerID;
 
-        public World() { }
+        public World() { WORLDSIZE = 5000; }
         public World(ILogger logger, Dictionary<int, Circle> Players,Dictionary<int,Circle> Food)
         {
            

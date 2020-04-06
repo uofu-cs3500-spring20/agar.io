@@ -1,4 +1,5 @@
 ﻿using Agario;
+using Microsoft.Extensions.Logging;
 using Model;
 using NetworkUtil;
 using Newtonsoft.Json;
@@ -8,6 +9,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -24,17 +26,25 @@ namespace ViewController
         private string failedMsg;
         private float playerID;
         private StringBuilder commandlist;
-
+        private ILogger logger;
         public delegate void ServerUpdateHandler();
         private event ServerUpdateHandler DataArrived;
-
-        public view()
+        private Circle player;
+        public view(ILogger logger)
         {
+            this.logger = logger;
             commandlist = new StringBuilder();
             world = new World();
-            RegisterServerUpdate(Frame);
             InitializeComponent();
+            RegisterServerUpdate(Frame);
+            playfield = new Playfield(world);
+            this.playfield.Location = new Point(10, 70);
+            this.playfield.Size = new Size(804, 804);
+            this.playfield.MouseMove += new MouseEventHandler(On_Move);
 
+            this.playfield.BorderStyle = BorderStyle.Fixed3D;
+            this.Controls.Add(playfield);
+            this.playfield.Focus();
 
         }
 
@@ -43,7 +53,7 @@ namespace ViewController
 
             try
             {
-                MethodInvoker m = new MethodInvoker(() => { Invalidate(); });
+                MethodInvoker m = new MethodInvoker(() => {Invalidate(true); });
                 Invoke(m);
             }
             catch { }
@@ -56,8 +66,7 @@ namespace ViewController
 
         private void ConnectToServer(string ip, string name)
         {
-            drawingpanel.BackColor = Color.Transparent;
-            
+            playfield.BackColor = Color.White;            
             Networking.ConnectToServer(OnConnect, ip, 11000);
            
 
@@ -123,7 +132,11 @@ namespace ViewController
                                 players?.Add(circle.ID, circle);
                                 if (circle.NAME.Equals(username))
                                 {
+                                    logger.LogInformation($"Movement: {circle.LOC.X}, {circle.LOC.Y}");
                                     playerID = circle.ID;
+                                    player = circle;
+                                    playfield.playerID = circle.ID;
+                                    playfield.username = circle.NAME;
                                 }
                             }else if(circle.TYPE == 2)
                             {
@@ -142,6 +155,7 @@ namespace ViewController
             world.Food = food;
             Networking.GetData(server);
             DataArrived();
+
         }
         public void RegisterServerUpdate(ServerUpdateHandler handler)
         {
@@ -154,98 +168,7 @@ namespace ViewController
             return false;
         }
 
-
-       
-
-        protected override void OnPaint(PaintEventArgs e)
-        {
-
-            Rectangle r = drawingpanel.ClientRectangle;
-            float centerx = r.Width / 2;
-            float centrey = r.Height / 2;
-
-            if (!(world.Players is null))
-            {
-                world.Players.TryGetValue((int)playerID, out Circle player);
-                int playerX = (int)player.LOC.X;
-                int playerY = (int)player.LOC.Y;
-                e.Graphics.TranslateTransform(-(playerX - centerx), -(playerY - centrey)); 
-                e.Graphics.DrawRectangle(new Pen(Color.Black, 2), new Rectangle(5000, 5000, 5000, 5000));
-                
-
-                var argb = 0;
-
-                Font f = new Font(FontFamily.GenericSansSerif, 10);
-                argb = Convert.ToInt32(player.ARGB_COLOR);
-
-                Color col = Color.FromArgb(argb);
-                using Pen pen = new Pen(col);
-                Brush b = pen.Brush;
-                Brush d = Brushes.Black;
-                Point p = new Point((int)playerX, (int)playerY);
-                e.Graphics.FillEllipse(b, new Rectangle(p, new Size((int)player.RADIUS, (int)player.RADIUS)));
-                e.Graphics.DrawString(username + $" : {playerX}, {playerY}", f, d, new PointF(playerX, playerY));
-
-
-                DrawFood(e, p);
-                DrawPlayers(e, p);
-            }
-            base.OnPaint(e);
-        }
-        public void DrawPlayers(PaintEventArgs e, Point point)
-        {
-            var argb = 0;
-
-            foreach (Circle player in world.Players.Values)
-            {
-
-                Font f = new Font(FontFamily.GenericSansSerif, 10);
-                argb = Convert.ToInt32(player.ARGB_COLOR);
-
-                Color col = Color.FromArgb(argb);
-                using Pen pen = new Pen(col);
-                Brush b = pen.Brush;
-                Brush d = Brushes.Black;
-                Point p = new Point((int)player.LOC.X, (int)player.LOC.Y);
-                e.Graphics.FillEllipse(b, new Rectangle(p, new Size((int)player.RADIUS, (int)player.RADIUS)));
-                e.Graphics.DrawString(username + $" : {player.LOC.X}, {player.LOC.Y}", f, d, new PointF(player.LOC.X, player.LOC.Y));
-
-            }
-        }
-        public void DrawFood(PaintEventArgs e, Point point)
-        {
-
-
-            if (!(world?.Food is null))
-            {
-                var argb = 0;
-
-                Font f = new Font(FontFamily.GenericSansSerif, 10);
-                foreach (Circle c in world.Food.Values)
-                {
-                    argb = Convert.ToInt32(c.ARGB_COLOR);
-
-                    Color col = Color.FromArgb(argb);
-                    using Pen pen = new Pen(col);
-                    Brush b = pen.Brush;
-                    Point p = new Point((int)c.LOC.X, (int)c.LOC.Y);
-
-                    if ((p.X > (point.X - 399) && p.X < (point.X + 399)) && (p.Y > point.Y - 399 && p.Y < point.Y + 399))
-                    {
-                        e.Graphics.FillEllipse(b, new Rectangle(p, new Size((int)c.RADIUS, (int)c.RADIUS)));
-                        e.Graphics.DrawString($"{p.X}, {p.Y}", f, b, p);
-                    }
-
-
-                }
-            }
-        }
-
-
-        public void Zoom()
-        {
-
-        }
+     
         private void On_Move(object sender, MouseEventArgs e)
         {
             if (e.X != 0 && e.Y != 0 && !(server is null) && !(world.Players is null))
@@ -255,7 +178,9 @@ namespace ViewController
                 world.Players.TryGetValue((int)playerID, out Circle player);
                 int x = (int)player.LOC.X;
                 int y = (int)player.LOC.Y;
-                string message = $"(move,{-20},{3})";
+
+
+                string message = $"(move,{(int)1},{(int)1})";
                 Networking.Send(server.TheSocket,message);
             }
 

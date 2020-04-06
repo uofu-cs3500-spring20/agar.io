@@ -31,7 +31,7 @@ namespace ViewController
 
         Label position;
 
-        Panel drawingpanel;
+        Playfield playfield;
 
         GroupBox status;
         GroupBox box;
@@ -67,7 +67,7 @@ namespace ViewController
             this.ms = new Label();
             this.mass = new Label();
             this.position = new Label();
-            this.drawingpanel = new Panel();
+            
             this.status = new GroupBox();
             this.box = new GroupBox();
             this.connectbutton = new Button()
@@ -83,7 +83,7 @@ namespace ViewController
             //Add groups to control
             Controls.Add(box);
             Controls.Add(status);
-            Controls.Add(drawingpanel);
+            Controls.Add(playfield);
 
             //Add items to groups
 
@@ -141,12 +141,7 @@ namespace ViewController
             this.status.Size = new System.Drawing.Size(180,900);
             
 
-            this.drawingpanel.Location = new System.Drawing.Point(10,70);
-            this.drawingpanel.Size = new System.Drawing.Size(804,804);
-            this.drawingpanel.MouseMove += new MouseEventHandler(On_Move);
            
-            this.drawingpanel.BorderStyle = BorderStyle.Fixed3D;
-            
 
             this.AutoScaleMode = AutoScaleMode.Dpi;
             this.DoubleBuffered = true;

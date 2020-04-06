@@ -1,3 +1,6 @@
+using FileLogger;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +20,20 @@ namespace ViewController
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            view view = new view();
+
+            ServiceCollection services = new ServiceCollection();
+            using CustomFileLogProvider provider = new CustomFileLogProvider();
+            services.AddLogging(configure =>
+            {
+                
+                configure.AddProvider(provider);
+                configure.SetMinimumLevel(LogLevel.Debug);
+
+            });
+            using ServiceProvider serviceProvider = services.BuildServiceProvider();
+
+            ILogger logger = serviceProvider?.GetRequiredService<ILogger<view>>();
+            view view = new view(logger);
             Application.Run(view);
         }
     }

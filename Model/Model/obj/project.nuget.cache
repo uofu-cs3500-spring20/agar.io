@@ -1,10 +1,18 @@
 {
   "version": 2,
-  "dgSpecHash": "5yDuwxbPn8F1j+lpaILkqJMfPG2JbdvcAmY1lf2iccsoQQV2BSdxSAQ/72wk+cYWXMpzXsDuJXHyHphcePCPxA==",
+  "dgSpecHash": "9XV7khzgJMIDqb6XcRJMRngdSQJYyXYKlHJop34VYTbOn6r6GzJUL1CKTEFFla3O2YmxcnH8bIol2lVfEiDLSQ==",
   "success": true,
   "projectFilePath": "C:\\Users\\gabee\\source\\repos\\agar.io\\Model\\Model\\Model.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\gabee\\.nuget\\packages\\microsoft.extensions.configuration\\3.1.3\\microsoft.extensions.configuration.3.1.3.nupkg.sha512",
+    "C:\\Users\\gabee\\.nuget\\packages\\microsoft.extensions.configuration.abstractions\\3.1.3\\microsoft.extensions.configuration.abstractions.3.1.3.nupkg.sha512",
+    "C:\\Users\\gabee\\.nuget\\packages\\microsoft.extensions.configuration.binder\\3.1.3\\microsoft.extensions.configuration.binder.3.1.3.nupkg.sha512",
+    "C:\\Users\\gabee\\.nuget\\packages\\microsoft.extensions.dependencyinjection\\3.1.3\\microsoft.extensions.dependencyinjection.3.1.3.nupkg.sha512",
+    "C:\\Users\\gabee\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\3.1.3\\microsoft.extensions.dependencyinjection.abstractions.3.1.3.nupkg.sha512",
+    "C:\\Users\\gabee\\.nuget\\packages\\microsoft.extensions.logging\\3.1.3\\microsoft.extensions.logging.3.1.3.nupkg.sha512",
     "C:\\Users\\gabee\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\3.1.3\\microsoft.extensions.logging.abstractions.3.1.3.nupkg.sha512",
+    "C:\\Users\\gabee\\.nuget\\packages\\microsoft.extensions.options\\3.1.3\\microsoft.extensions.options.3.1.3.nupkg.sha512",
+    "C:\\Users\\gabee\\.nuget\\packages\\microsoft.extensions.primitives\\3.1.3\\microsoft.extensions.primitives.3.1.3.nupkg.sha512",
     "C:\\Users\\gabee\\.nuget\\packages\\newtonsoft.json\\12.0.3\\newtonsoft.json.12.0.3.nupkg.sha512"
   ],
   "logs": []
