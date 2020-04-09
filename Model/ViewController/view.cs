@@ -25,7 +25,8 @@ namespace ViewController
         private bool failedConnect;
         private string failedMsg;
         private int playerID;
-        private string commandlist = $"(move,1,1)";
+        private string moveCommands = $"(move,1,1)";
+        private string splitCommands = $"";
         private ILogger logger;
         public delegate void ServerUpdateHandler();
         private event ServerUpdateHandler DataArrived;
@@ -44,42 +45,63 @@ namespace ViewController
             this.playfield.Location = new Point(10, 70);
             this.playfield.Size = new Size(804, 804);
             this.playfield.MouseMove += new MouseEventHandler(On_Move);
-          
+            this.playfield.PreviewKeyDown += Playfield_PreviewKeyDown;
             this.playfield.BorderStyle = BorderStyle.Fixed3D;
             this.Controls.Add(playfield);
             this.playfield.Focus();
 
         }
+        private bool splitting = false;
+        private void Playfield_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            if(e.KeyCode == Keys.Space)
+            {
+                splitting = true;
+                splitCommands = $"(split,{mouseX},{mouseY})";
+            }
+        }
 
         private void Frame()
         {
 
-            if (commandlist.Length > 0)
+            if (moveCommands.Length > 0)
             {
 
-                Networking.Send(server.socket, commandlist.ToString());
+                Networking.Send(server.socket, moveCommands.ToString());
+                if (splitting)
+                {
+                    Networking.Send(server.socket, splitCommands.ToString());
+                    splitting = false;
+                }
+                moveCommands = $"(move,{mouseX},{mouseY})";
 
-                commandlist = $"(move,{mouseX},{mouseY})";
+
             }
 
             try
             {
                 MethodInvoker m = new MethodInvoker(() => { Invalidate(true); });
                 Invoke(m);
+
+                m = new MethodInvoker(updateStatusBox);
+
+                Invoke(m);
+
             }
             catch { }
         }
-
-        public World GetWorld()
+        private void updateStatusBox()
         {
-            return null;
-        }
+            world.Players.TryGetValue(playerID, out Circle c);
 
+            this.mass.Text = "MASS: " + (int)c.MASS;
+            this.position.Text = $"Loc: X: {(int)c.LOC.X} Y: {(int)c.LOC.Y}";
+        }
         private void ConnectToServer(string ip, string name)
         {
             playfield.BackColor = Color.White;
             Networking.Connect_to_Server(OnConnect, ip);
-
+            Networking.Connect_to_Server(OnConnect, ip);
 
         }
 
@@ -95,7 +117,6 @@ namespace ViewController
             }
             server = state;
             server.on_data_received_handler = Startup;
-
             Networking.Send(server.socket, username + '\n');
             Networking.await_more_data(server);
         }
@@ -103,6 +124,10 @@ namespace ViewController
         public void Startup(Preserved_Socket_State state)
         {
             server.on_data_received_handler = DataReceived;
+            MethodInvoker m = new MethodInvoker(() => this.playfield.Focus());
+            Invoke(m);
+
+           
             string startupmessage = server.Message;
             Circle player = JsonConvert.DeserializeObject<Circle>(startupmessage);
             if (player.NAME == username)
@@ -112,8 +137,8 @@ namespace ViewController
                 world.Players.Add(player.ID, player);
             }
 
-            if (!server.Has_More_Data())
-                Networking.await_more_data(server);
+      
+               Networking.await_more_data(server);
         }
 
 
@@ -132,16 +157,16 @@ namespace ViewController
                     case 0:
                         if (world.Food.TryGetValue(circle.ID, out Circle newCircle))
                         {
-                            
-                                world.Food.Remove(circle.ID);
-                                world.Food.Add(circle.ID,circle);
+
+                            world.Food.Remove(circle.ID);
+                            world.Food.Add(circle.ID, circle);
 
 
                             newCircle = circle;
                         }
-                                               
-                            world.Food.Add(circle.ID, circle);
-                        
+
+                        world.Food.Add(circle.ID, circle);
+
                         break;
 
                     case 1:
@@ -154,8 +179,8 @@ namespace ViewController
                         {
                             world.Players.Add(circle.ID, circle);
                         }
-                           
-                        logger.LogInformation("Logged: " + circle.NAME + " " + circle.LOC.ToString());
+
+                        logger?.LogInformation("Logged: " + circle.NAME + " " + circle.LOC.ToString());
                         break;
                     case 2:
                         logger.LogInformation("HEARTBEAT");
@@ -174,7 +199,7 @@ namespace ViewController
         }
 
 
-     
+
 
 
         public void RegisterServerUpdate(ServerUpdateHandler handler)
@@ -192,30 +217,56 @@ namespace ViewController
             {
                 x = (int)player.LOC.X;
                 y = (int)player.LOC.Y;
-
+                CalculateMove(player, e);
             }
+            
+
+
+        }
+
+        private void CalculateMove(Circle c, MouseEventArgs e)
+        {
+            double moveSpeed = c.MASS / 80;
+
             if (e.X != 0 && e.Y != 0 && !(server is null) && !(world.Players is null))
             {
-                if (e.X < (playfield.Size.Width/2))
+                if (e.X < (playfield.Size.Width / 2))
                 {
-                    mouseX = -60;
+                    mouseX = -(200-(int)moveSpeed);
                 }
                 else
                 {
-                    mouseX = 60;
+                    mouseX = (200-(int)moveSpeed);
                 }
                 if (e.Y < (playfield.Size.Height / 2))
                 {
-                    mouseY = -60;
+                    mouseY = -(200-(int)moveSpeed);
                 }
                 else
                 {
-                    mouseY = 60;
+                    mouseY = (200-(int)moveSpeed);
+                }
+
+
+                if (y + mouseY == world.WORLDSIZE)
+                {
+                    mouseY -= 59;
+                }
+                else if (y - mouseY == 0)
+                {
+                    mouseY += 59;
+
+                }
+                if (x + mouseX == world.WORLDSIZE)
+                {
+                    mouseX -= 59;
+                }
+                else if (x - mouseX == 0)
+                {
+                    mouseX += 59;
                 }
 
             }
-
-
         }
 
         private void ConnectButton_Click(object sender, MouseEventArgs e)
@@ -225,12 +276,6 @@ namespace ViewController
             connectbutton.Enabled = false;
 
         }
-
-        private void IPAddress_TextChanged(object sender, EventArgs e)
-        {
-            // throw new NotImplementedException();
-        }
-
 
     }
 }

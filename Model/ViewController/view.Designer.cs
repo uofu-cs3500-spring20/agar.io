@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Drawing.Text;
 using System.Windows.Forms;
 
 namespace ViewController
@@ -103,18 +104,37 @@ namespace ViewController
             name.Location = new System.Drawing.Point(450, 31);
             box.Controls.Add(namelabel);
 
-
-
-            status.Controls.Add(fps);
-
-            fps.Location = new Point(750,100);
-            fps.Size = new Size(100,100);
-            fps.Text = "FPS: ";
-            fps.Visible = true;
-            fps.ForeColor = Color.Red;
-            fps.Show();
+            this.status.Location = new System.Drawing.Point(810, 60);
+            this.status.Size = new System.Drawing.Size(180, 900);
             status.Controls.Add(ms);
             status.Controls.Add(mass);
+            status.Controls.Add(fps);
+            status.Controls.Add(position);
+
+            Font statusFont = new Font(FontFamily.GenericSansSerif,10);
+            fps.Font = statusFont;
+            fps.Location = new Point(30,30);
+            fps.Size = new Size(100,20);
+            fps.Text = "FPS: ";
+            fps.Visible = true;
+
+            ms.Font = statusFont;
+            ms.Location = new Point(30, 50);
+            ms.Size = new Size(100, 20);
+            ms.Text = "Ms: ";
+            ms.Visible = true;
+
+            mass.Font = statusFont;
+            mass.Location = new Point(30, 70);
+            mass.Size = new Size(200, 20);
+            mass.Text = "Mass: ";
+            mass.Visible = true;
+
+            position.Font = statusFont;
+            position.Location = new Point(20, 90);
+            position.Size = new Size(200, 20);
+            position.Text = "Loc: X:0 Y:0 ";
+            position.Visible = true;
 
 
             this.components = new System.ComponentModel.Container();
@@ -133,12 +153,12 @@ namespace ViewController
             this.box.Size = new System.Drawing.Size(980, 70);
             this.box.TabIndex = 0;
             this.box.TabStop = false;
+            
             connectbutton.Enabled = true;
             this.connectbutton.MouseClick += new MouseEventHandler(ConnectButton_Click);
 
 
-            this.status.Location = new System.Drawing.Point(810,60);
-            this.status.Size = new System.Drawing.Size(180,900);
+        
             
 
            

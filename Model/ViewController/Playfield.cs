@@ -46,7 +46,7 @@ namespace ViewController
 
                     e.Graphics.TranslateTransform(-(float)(playerX) + (imageSize.Width / 2) - (player.RADIUS / 2), (float)-(playerY) + (imageSize.Width / 2) - (player.RADIUS / 2));
 
-                    DrawBorder(e, world.WORLDSIZE);
+                    DrawBorder(e, world.WORLDSIZE+20);
 
                     if (player.MASS == 0)
                     {
@@ -108,8 +108,8 @@ namespace ViewController
             using Pen pen = new Pen(col);
             Brush b = pen.Brush;
             Brush d = Brushes.Black;
-            e.Graphics.FillEllipse(b, new Rectangle(new Point((int)(circle.LOC.X), (int)(circle.LOC.Y)), new Size((int)circle.RADIUS, (int)circle.RADIUS)));
-            e.Graphics.DrawString($"{circle.NAME}: {circle.LOC.X}, {circle.LOC.Y}", f, d, new PointF((float)(circle.LOC.X), (float)(circle.LOC.Y)));
+            e.Graphics.FillEllipse(b, new Rectangle(new Point((int)(circle.LOC.X-(circle.RADIUS/1.2)), (int)(circle.LOC.Y-(circle.RADIUS/1.2))), new Size((int)(circle.RADIUS*2), (int)(circle.RADIUS*2))));
+            e.Graphics.DrawString($"{username}", f, b, new RectangleF(new Point((int)(circle.LOC.X - (circle.RADIUS / 1.2)), (int)(circle.LOC.Y - (circle.RADIUS / 1.2)-50)), new Size(100, 11)));          
         }
         public void DrawFood(Circle c, PaintEventArgs e)
         {
@@ -121,8 +121,8 @@ namespace ViewController
             using Pen pen = new Pen(col);
             Brush b = pen.Brush;
             Brush d = Brushes.Black;
-            e.Graphics.FillEllipse(b, new Rectangle(new Point((int)(circle.LOC.X), (int)(circle.LOC.Y)), new Size((int)circle.RADIUS, (int)circle.RADIUS)));
-            e.Graphics.DrawString($" : {circle.LOC.X}, {circle.LOC.Y}", f, d, new PointF((float)(circle.LOC.X), (float)(circle.LOC.Y)));
+            e.Graphics.FillEllipse(b, new Rectangle(new Point((int)(circle.LOC.X-(circle.RADIUS/4)), (int)(circle.LOC.Y-(circle.RADIUS/4))), new Size((int)circle.RADIUS, (int)circle.RADIUS)));
+           // e.Graphics.DrawString($" : {circle.LOC.X}, {circle.LOC.Y}", f, d, new PointF((float)(circle.LOC.X), (float)(circle.LOC.Y)));
         }
 
 
