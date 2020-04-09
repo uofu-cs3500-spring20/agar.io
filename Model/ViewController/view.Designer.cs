@@ -93,7 +93,6 @@ namespace ViewController
             ipaddress.Size = new System.Drawing.Size(100,70);
             ipaddress.Text = "127.0.0.1";
             ipaddress.Location = new System.Drawing.Point(130,31);
-            this.ipaddress.TextChanged += new EventHandler(IPAddress_TextChanged);
             box.Controls.Add(ipaddresslabel);
 
 

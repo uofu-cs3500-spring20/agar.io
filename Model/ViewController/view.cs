@@ -30,7 +30,8 @@ namespace ViewController
         private ILogger logger;
         public delegate void ServerUpdateHandler();
         private event ServerUpdateHandler DataArrived;
-
+        public int sX;
+        public int sY;
 
         public view(ILogger logger)
         {
@@ -46,11 +47,22 @@ namespace ViewController
             this.playfield.Size = new Size(804, 804);
             this.playfield.MouseMove += new MouseEventHandler(On_Move);
             this.playfield.PreviewKeyDown += Playfield_PreviewKeyDown;
+            this.playfield.MouseWheel += Playfield_MouseWheel;
             this.playfield.BorderStyle = BorderStyle.Fixed3D;
             this.Controls.Add(playfield);
             this.playfield.Focus();
 
         }
+
+        private void Playfield_MouseWheel(object sender, MouseEventArgs e)
+        {
+            sX = e.Delta;
+            sY = e.Delta;
+       
+                playfield.Zoom(sX,sY);
+                Invalidate(true);
+                   }
+
         private bool splitting = false;
         private void Playfield_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
@@ -210,6 +222,9 @@ namespace ViewController
         float mouseY = 0;
         int x = 0;
         int y = 0;
+        internal static int scaleX;
+        internal static readonly int scaleY;
+
         private void On_Move(object sender, MouseEventArgs e)
         {
 
