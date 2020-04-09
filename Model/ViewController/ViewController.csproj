@@ -13,7 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\libs\libs.csproj" />
     <ProjectReference Include="..\Model\Model.csproj" />
   </ItemGroup>
 
@@ -21,8 +20,14 @@
     <Reference Include="FileLogger">
       <HintPath>..\..\..\assignment-seven-logging-and-networking-gibs\FileLogger\FileLogger\bin\Debug\netcoreapp3.1\FileLogger.dll</HintPath>
     </Reference>
+    <Reference Include="Logger">
+      <HintPath>..\..\..\..\..\Downloads\server (1)\publish\Logger.dll</HintPath>
+    </Reference>
     <Reference Include="Networking">
-      <HintPath>..\..\..\..\..\Downloads\TankWarsServer\TankWarsServer\Networking.dll</HintPath>
+      <HintPath>..\libs\Networking.dll</HintPath>
+    </Reference>
+    <Reference Include="Server">
+      <HintPath>..\libs\Server.dll</HintPath>
     </Reference>
   </ItemGroup>
 

@@ -164,9 +164,6 @@
         "frameworks": {
           "netcoreapp3.1": {
             "projectReferences": {
-              "C:\\Users\\gabee\\source\\repos\\agar.io\\Model\\libs\\libs.csproj": {
-                "projectPath": "C:\\Users\\gabee\\source\\repos\\agar.io\\Model\\libs\\libs.csproj"
-              },
               "C:\\Users\\gabee\\source\\repos\\agar.io\\Model\\Model\\Model.csproj": {
                 "projectPath": "C:\\Users\\gabee\\source\\repos\\agar.io\\Model\\Model\\Model.csproj"
               }

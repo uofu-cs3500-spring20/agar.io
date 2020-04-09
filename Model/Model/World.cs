@@ -56,6 +56,14 @@ namespace Model
 
         }
 
+        public Dictionary<int, Circle> GetPlayers()
+        {
+            return this.Players;
+        }
 
+        public Dictionary<int, Circle> GetFood()
+        {
+            return this.Food;
+        }
     }
 }

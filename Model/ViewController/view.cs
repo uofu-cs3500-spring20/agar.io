@@ -1,7 +1,7 @@
 ﻿using Agario;
 using Microsoft.Extensions.Logging;
 using Model;
-using NetworkUtil;
+using NetworkingNS;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -19,29 +19,32 @@ namespace ViewController
 {
     public partial class view : Form
     {
-        private static SocketState server;
+        private static Preserved_Socket_State server;
         private string username;
         private World world;
         private bool failedConnect;
         private string failedMsg;
-        private float playerID;
-        private StringBuilder commandlist;
+        private int playerID;
+        private string commandlist = $"(move,1,1)";
         private ILogger logger;
         public delegate void ServerUpdateHandler();
         private event ServerUpdateHandler DataArrived;
         private Circle player;
+
         public view(ILogger logger)
         {
+
             this.logger = logger;
-            commandlist = new StringBuilder();
             world = new World();
+            world.Players = new Dictionary<int, Circle>();
+            world.Food = new Dictionary<int, Circle>();
             InitializeComponent();
             RegisterServerUpdate(Frame);
             playfield = new Playfield(world);
             this.playfield.Location = new Point(10, 70);
             this.playfield.Size = new Size(804, 804);
             this.playfield.MouseMove += new MouseEventHandler(On_Move);
-
+            // this.playfield.MouseHover += new EventHandler(On_Move);
             this.playfield.BorderStyle = BorderStyle.Fixed3D;
             this.Controls.Add(playfield);
             this.playfield.Focus();
@@ -51,9 +54,17 @@ namespace ViewController
         private void Frame()
         {
 
+            if (commandlist.Length > 0)
+            {
+
+                Networking.Send(server.socket, commandlist.ToString());
+
+                commandlist = $"(move,{mouseX},{mouseY})";
+            }
+
             try
             {
-                MethodInvoker m = new MethodInvoker(() => {Invalidate(true); });
+                MethodInvoker m = new MethodInvoker(() => { Invalidate(true); });
                 Invoke(m);
             }
             catch { }
@@ -66,122 +77,160 @@ namespace ViewController
 
         private void ConnectToServer(string ip, string name)
         {
-            playfield.BackColor = Color.White;            
-            Networking.ConnectToServer(OnConnect, ip, 11000);
-           
+            playfield.BackColor = Color.White;
+            Networking.Connect_to_Server(OnConnect, ip);
+
 
         }
 
-        public void OnConnect(SocketState state)
+        public void OnConnect(Preserved_Socket_State state)
         {
 
 
-            if (state.ErrorOccured)
+            if (state.error_occured)
             {
                 failedConnect = true;
-                failedMsg = state.ErrorMessage;
+                failedMsg = state.error_message;
                 return;
             }
             server = state;
-            server.CallMe = AwaitData;
+            server.on_data_received_handler = Startup;
 
-            Networking.Send(server.TheSocket, username + '\n');
-            Networking.GetData(server);
+            Networking.Send(server.socket, username + '\n');
+            Networking.await_more_data(server);
         }
 
-        private void AwaitData(SocketState state)
+        public void Startup(Preserved_Socket_State state)
+        {
+            server.on_data_received_handler = DataReceived;
+            string startupmessage = server.Message;
+            Circle player = JsonConvert.DeserializeObject<Circle>(startupmessage);
+            if (player.NAME == username)
+            {
+                playerID = player.ID;
+                playfield.playerID = playerID;
+                world.Players.Add(player.ID, player);
+            }
+
+            if (!server.Has_More_Data())
+                Networking.await_more_data(server);
+        }
+
+
+
+        Dictionary<int, Circle> Additions = new Dictionary<int, Circle>();
+
+
+        private void DataReceived(Preserved_Socket_State state)
         {
 
-            string totalData = server.GetData();
-            string[] parts = Regex.Split(totalData, @"(?<=[\n])");
 
-            Dictionary<int, Circle> players = new Dictionary<int, Circle>();
-            Dictionary<int, Circle> food = new Dictionary<int, Circle>();
-            Dictionary<int, Circle> circles = new Dictionary<int, Circle>();
-
+            Circle circle = new Circle();
             try
             {
-                //Eliminate race conditions
-                lock (world)
+                circle = JsonConvert.DeserializeObject<Circle>(state.Message);
+                if(Additions.TryGetValue(circle.ID, out Circle newCircle))
                 {
+                    circle = newCircle;
+                }
+                else
+                {
+                    Additions.Add(circle.ID, circle);
+                }
 
-                    //Here's where we need to differentiate the different json objects into their own lists.
-                    foreach (string message in parts)
+            }
+            catch (Exception e) { logger.LogError("Incorrect Format for circle: " + e.Message); }
+
+            logger.LogInformation($"{Additions.Count}");
+
+            if (!server.Has_More_Data())
+            {
+                UpdateGui();
+                Networking.await_more_data(server);
+
+            }
+        }
+
+
+        public void UpdateGui()
+        {
+            Dictionary<int, Circle> playersAddition = new Dictionary<int, Circle>();
+            Dictionary<int, Circle> foodAddition = new Dictionary<int, Circle>();
+
+
+            lock (world)
+            {
+                foreach (Circle circle in Additions.Values)
+                {
+                    switch (circle.TYPE)
                     {
-
-                        // Ignore empty strings added by the regex splitter
-                        if (message.Length == 0)
-                            continue;
-                        // The regex splitter will include the last string even if it doesn't end with a '\n',
-                        // So we need to ignore it if this happens. 
-                        if (message[message.Length - 1] != '\n')
+                        case 0:
+                            if (!foodAddition.ContainsKey(circle.ID))
+                            {
+                                foodAddition.Add(circle.ID, circle);
+                                //logger.LogInformation(foodAddition.Count + "");
+                                if (circle.MASS == 0)
+                                    logger.LogInformation("EMPTY FOOD: ++++");
+                            }
                             break;
 
-                        //Begin deserializing the server's messages, while adding them to lists to be passed along
-                        Circle circle = JsonConvert.DeserializeObject<Circle>(message);
+                        case 1:
+                            if (!playersAddition.ContainsKey(circle.ID))
+                                playersAddition.Add(circle.ID, circle);
+                            logger.LogInformation("Logged: " + circle.NAME + " " + circle.LOC.ToString());
+                            break;
+                        case 2:
+                            logger.LogInformation("HEARTBEAT");
 
-                        if (!(circle is null))
-                        {
-                            if (circle.TYPE == 0)
-                            {
-                                food?.Add(circle.ID, circle);
-                            }
-                            else if (circle.TYPE == 1)
-                            {
-                                circle.ISPLAYER = true;
-                                players?.Add(circle.ID, circle);
-                                if (circle.NAME.Equals(username))
-                                {
-                                    logger.LogInformation($"Movement: {circle.LOC.X}, {circle.LOC.Y}");
-                                    playerID = circle.ID;
-                                    player = circle;
-                                    playfield.playerID = circle.ID;
-                                    playfield.username = circle.NAME;
-                                }
-                            }else if(circle.TYPE == 2)
-                            {
-                                circles.Add(circle.ID,circle);
-                            }
 
-                        }
-
+                            world.Food = foodAddition;
+                            world.Players = playersAddition;
+                            DataArrived();
+                            break;
                     }
-
                 }
             }
-            catch { }
-            //Pass all of the lists to the world to process further
-            world.Players = players;
-            world.Food = food;
-            Networking.GetData(server);
-            DataArrived();
+
 
         }
+
+
         public void RegisterServerUpdate(ServerUpdateHandler handler)
         {
             DataArrived += handler;
         }
-
-
-        public bool HasMoreData(SocketState state)
-        {
-            return false;
-        }
-
-     
+        float mouseX = 0;
+        float mouseY = 0;
+        int x = 0;
+        int y = 0;
         private void On_Move(object sender, MouseEventArgs e)
         {
+
+            if (world.Players.TryGetValue((int)playerID, out Circle player))
+            {
+                x = (int)player.LOC.X;
+                y = (int)player.LOC.Y;
+
+            }
             if (e.X != 0 && e.Y != 0 && !(server is null) && !(world.Players is null))
             {
-                float mouseX = e.X;
-                float mouseY = e.Y;
-                world.Players.TryGetValue((int)playerID, out Circle player);
-                int x = (int)player.LOC.X;
-                int y = (int)player.LOC.Y;
+                if (e.X < 460)
+                {
+                    mouseX = -100;
+                }
+                else
+                {
+                    mouseX = 100;
+                }
+                if (e.Y < 460)
+                {
+                    mouseY = -100;
+                }
+                else
+                {
+                    mouseY = 100;
+                }
 
-
-                string message = $"(move,{(int)1},{(int)1})";
-                Networking.Send(server.TheSocket,message);
             }
 
 

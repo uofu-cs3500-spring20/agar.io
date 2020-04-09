@@ -20,7 +20,7 @@ namespace Agario
             TYPE = type;
             RADIUS = (float)MASS / 2;
         }
-
+        [JsonIgnore]
         public float RADIUS
         {
             get; set;
@@ -58,6 +58,7 @@ namespace Agario
         {
             get; set;
         }
+        [JsonIgnore]
         public bool ISPLAYER
         {
             get; set;

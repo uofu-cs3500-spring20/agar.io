@@ -337,8 +337,7 @@
       "Microsoft.Extensions.DependencyInjection >= 3.1.3",
       "Microsoft.Extensions.Logging >= 3.1.3",
       "Model >= 1.0.0",
-      "Newtonsoft.Json >= 12.0.3",
-      "libs >= 1.0.0"
+      "Newtonsoft.Json >= 12.0.3"
     ]
   },
   "packageFolders": {
@@ -371,9 +370,6 @@
       "frameworks": {
         "netcoreapp3.1": {
           "projectReferences": {
-            "C:\\Users\\gabee\\source\\repos\\agar.io\\Model\\libs\\libs.csproj": {
-              "projectPath": "C:\\Users\\gabee\\source\\repos\\agar.io\\Model\\libs\\libs.csproj"
-            },
             "C:\\Users\\gabee\\source\\repos\\agar.io\\Model\\Model\\Model.csproj": {
               "projectPath": "C:\\Users\\gabee\\source\\repos\\agar.io\\Model\\Model\\Model.csproj"
             }

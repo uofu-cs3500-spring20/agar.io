@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -9,11 +9,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Networking">
-      <HintPath>..\..\..\..\..\Downloads\server\publish\Networking.dll</HintPath>
-    </Reference>
-    <Reference Include="Server">
-      <HintPath>..\..\..\..\..\Downloads\server\publish\Server.dll</HintPath>
+    <Reference Include="FileLogger">
+      <HintPath>..\..\..\assignment-seven-logging-and-networking-gibs\FileLogger\FileLogger\bin\Debug\netcoreapp3.1\FileLogger.dll</HintPath>
     </Reference>
   </ItemGroup>
 
