@@ -18,8 +18,11 @@ namespace Agario
             ARGB_COLOR = argb_color;
             BELONGS_TO = belongs_to;
             TYPE = type;
-            RADIUS = (float)MASS / 2;
+            RADIUS = (float)Math.Sqrt((MASS*Math.PI));
         }
+
+        //MASS = PI * R *R
+        //RADIUS = SQRT(MASS*PI)
         [JsonIgnore]
         public float RADIUS
         {

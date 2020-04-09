@@ -28,9 +28,9 @@ namespace ViewController
         }
         protected override void OnPaint(PaintEventArgs e)
         {
-           // Invalidate(true);
+            // Invalidate(true);
             imageSize = this.Size;
-            if (!(world.Players is null) && world.WORLDSIZE>0)
+            if (!(world.Players is null) && world.WORLDSIZE > 0)
             {
 
 
@@ -40,30 +40,47 @@ namespace ViewController
 
                 if (players.TryGetValue(playerID, out player))
                 {
-
+                 
                     double playerX = player.LOC.X;
                     double playerY = player.LOC.Y;
-                  
+
                     e.Graphics.TranslateTransform(-(float)(playerX) + (imageSize.Width / 2) - (player.RADIUS / 2), (float)-(playerY) + (imageSize.Width / 2) - (player.RADIUS / 2));
 
                     DrawBorder(e, world.WORLDSIZE);
 
-
-                    try
+                    if (player.MASS == 0)
                     {
-                        foreach (Circle c in food.Values)
+                        
+                        Font f = new Font(FontFamily.GenericSansSerif, 80);
+
+                        Color col = Color.Black;
+                        using Pen pen = new Pen(col);
+                        Brush b = pen.Brush;
+                        Brush d = Brushes.Black;
+                        e.Graphics.DrawString("GAME OVER",f,b,new PointF((float)playerX - (imageSize.Width / 2), (float)playerY));
+
+
+                    }
+
+                    lock (world)
+                    {
+                        try
+                        {
+                            foreach (Circle c in food.Values)
+                            {
+                                if (c.MASS > 0 && c.LOC.X > playerX - 500 && c.LOC.X < playerX + 500 && c.LOC.Y > playerY - 500 && c.LOC.Y < playerY + 500)
+                                    DrawFood(c, e);
+                            }
+                       
+
+                        foreach (Circle c in players.Values)
                         {
                             if (c.MASS > 0 && c.LOC.X > playerX - 500 && c.LOC.X < playerX + 500 && c.LOC.Y > playerY - 500 && c.LOC.Y < playerY + 500)
-                                DrawFood(c, e);
+                                DrawPlayers(c, e);
                         }
+                        }
+                        catch { }
                     }
-                    catch { }
-                    foreach (Circle c in players.Values)
-                    {
-                        if (c.MASS > 0 && c.LOC.X > playerX - 500 && c.LOC.X < playerX + 500 && c.LOC.Y > playerY - 500 && c.LOC.Y < playerY + 500)
-                            DrawPlayers(c, e);
-                    }
-
 
 
                 }
@@ -77,7 +94,7 @@ namespace ViewController
             using Pen pen = new Pen(Color.Black);
             Brush b = pen.Brush;
             Brush d = Brushes.Black;
-            e.Graphics.DrawRectangle(pen, new Rectangle(new Point(0,0),new Size((int)size,(int)size) ));
+            e.Graphics.DrawRectangle(pen, new Rectangle(new Point(0, 0), new Size((int)size, (int)size)));
         }
 
         public void DrawPlayers(Circle c, PaintEventArgs e)

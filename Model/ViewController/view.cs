@@ -29,7 +29,7 @@ namespace ViewController
         private ILogger logger;
         public delegate void ServerUpdateHandler();
         private event ServerUpdateHandler DataArrived;
-        private Circle player;
+
 
         public view(ILogger logger)
         {
@@ -44,7 +44,7 @@ namespace ViewController
             this.playfield.Location = new Point(10, 70);
             this.playfield.Size = new Size(804, 804);
             this.playfield.MouseMove += new MouseEventHandler(On_Move);
-            // this.playfield.MouseHover += new EventHandler(On_Move);
+          
             this.playfield.BorderStyle = BorderStyle.Fixed3D;
             this.Controls.Add(playfield);
             this.playfield.Focus();
@@ -118,9 +118,6 @@ namespace ViewController
 
 
 
-        Dictionary<int, Circle> Additions = new Dictionary<int, Circle>();
-
-
         private void DataReceived(Preserved_Socket_State state)
         {
 
@@ -129,70 +126,55 @@ namespace ViewController
             try
             {
                 circle = JsonConvert.DeserializeObject<Circle>(state.Message);
-                if(Additions.TryGetValue(circle.ID, out Circle newCircle))
-                {
-                    circle = newCircle;
-                }
-                else
-                {
-                    Additions.Add(circle.ID, circle);
-                }
 
+                switch (circle.TYPE)
+                {
+                    case 0:
+                        if (world.Food.TryGetValue(circle.ID, out Circle newCircle))
+                        {
+                            
+                                world.Food.Remove(circle.ID);
+                                world.Food.Add(circle.ID,circle);
+
+
+                            newCircle = circle;
+                        }
+                                               
+                            world.Food.Add(circle.ID, circle);
+                        
+                        break;
+
+                    case 1:
+                        if (world.Players.TryGetValue(circle.ID, out newCircle))
+                        {
+                            world.Players.Remove(circle.ID);
+                            world.Players.Add(circle.ID, circle);
+                        }
+                        else
+                        {
+                            world.Players.Add(circle.ID, circle);
+                        }
+                           
+                        logger.LogInformation("Logged: " + circle.NAME + " " + circle.LOC.ToString());
+                        break;
+                    case 2:
+                        logger.LogInformation("HEARTBEAT");
+                        DataArrived();
+                        break;
+                }
             }
             catch (Exception e) { logger.LogError("Incorrect Format for circle: " + e.Message); }
 
-            logger.LogInformation($"{Additions.Count}");
 
             if (!server.Has_More_Data())
             {
-                UpdateGui();
                 Networking.await_more_data(server);
 
             }
         }
 
 
-        public void UpdateGui()
-        {
-            Dictionary<int, Circle> playersAddition = new Dictionary<int, Circle>();
-            Dictionary<int, Circle> foodAddition = new Dictionary<int, Circle>();
-
-
-            lock (world)
-            {
-                foreach (Circle circle in Additions.Values)
-                {
-                    switch (circle.TYPE)
-                    {
-                        case 0:
-                            if (!foodAddition.ContainsKey(circle.ID))
-                            {
-                                foodAddition.Add(circle.ID, circle);
-                                //logger.LogInformation(foodAddition.Count + "");
-                                if (circle.MASS == 0)
-                                    logger.LogInformation("EMPTY FOOD: ++++");
-                            }
-                            break;
-
-                        case 1:
-                            if (!playersAddition.ContainsKey(circle.ID))
-                                playersAddition.Add(circle.ID, circle);
-                            logger.LogInformation("Logged: " + circle.NAME + " " + circle.LOC.ToString());
-                            break;
-                        case 2:
-                            logger.LogInformation("HEARTBEAT");
-
-
-                            world.Food = foodAddition;
-                            world.Players = playersAddition;
-                            DataArrived();
-                            break;
-                    }
-                }
-            }
-
-
-        }
+     
 
 
         public void RegisterServerUpdate(ServerUpdateHandler handler)
@@ -214,21 +196,21 @@ namespace ViewController
             }
             if (e.X != 0 && e.Y != 0 && !(server is null) && !(world.Players is null))
             {
-                if (e.X < 460)
+                if (e.X < (playfield.Size.Width/2))
                 {
-                    mouseX = -100;
+                    mouseX = -60;
                 }
                 else
                 {
-                    mouseX = 100;
+                    mouseX = 60;
                 }
-                if (e.Y < 460)
+                if (e.Y < (playfield.Size.Height / 2))
                 {
-                    mouseY = -100;
+                    mouseY = -60;
                 }
                 else
                 {
-                    mouseY = 100;
+                    mouseY = 60;
                 }
 
             }
