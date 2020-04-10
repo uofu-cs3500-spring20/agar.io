@@ -22,8 +22,6 @@ namespace ViewController
         private static Preserved_Socket_State server;
         private string username;
         private World world;
-        private bool failedConnect;
-        private string failedMsg;
         private int playerID;
         private string moveCommands = $"(move,1,1)";
         private string splitCommands = $"";
@@ -58,15 +56,15 @@ namespace ViewController
         {
             sX = e.Delta;
             sY = e.Delta;
-       
-                playfield.Zoom(sX,sY);
-                Invalidate(true);
-                   }
+
+            playfield.Zoom(sX, sY);
+            Invalidate(true);
+        }
 
         private bool splitting = false;
         private void Playfield_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
-            if(e.KeyCode == Keys.Space)
+            if (e.KeyCode == Keys.Space)
             {
                 splitting = true;
                 splitCommands = $"(split,{mouseX},{mouseY})";
@@ -86,6 +84,7 @@ namespace ViewController
                     splitting = false;
                 }
                 moveCommands = $"(move,{mouseX},{mouseY})";
+                logger.LogInformation(moveCommands);
 
 
             }
@@ -105,14 +104,20 @@ namespace ViewController
         private void updateStatusBox()
         {
             world.Players.TryGetValue(playerID, out Circle c);
-
-            this.mass.Text = "MASS: " + (int)c.MASS;
-            this.position.Text = $"Loc: X: {(int)c.LOC.X} Y: {(int)c.LOC.Y}";
+            if (!username.Equals("admin"))
+            {
+                this.mass.Text = "MASS: " + (int)c.MASS;
+                this.position.Text = $"Loc: X: {(int)c.LOC.X} Y: {(int)c.LOC.Y}";
+            }
+            else
+            {
+                this.mass.Text = "MASS: " + "admin";
+                this.position.Text = $"Loc: X: admin";
+            }
         }
         private void ConnectToServer(string ip, string name)
         {
             playfield.BackColor = Color.White;
-            Networking.Connect_to_Server(OnConnect, ip);
             Networking.Connect_to_Server(OnConnect, ip);
 
         }
@@ -123,8 +128,7 @@ namespace ViewController
 
             if (state.error_occured)
             {
-                failedConnect = true;
-                failedMsg = state.error_message;
+                connectbutton.Enabled = true;
                 return;
             }
             server = state;
@@ -139,7 +143,7 @@ namespace ViewController
             MethodInvoker m = new MethodInvoker(() => this.playfield.Focus());
             Invoke(m);
 
-           
+
             string startupmessage = server.Message;
             Circle player = JsonConvert.DeserializeObject<Circle>(startupmessage);
             if (player.NAME == username)
@@ -148,9 +152,15 @@ namespace ViewController
                 playfield.playerID = playerID;
                 world.Players.Add(player.ID, player);
             }
+            else if (player.NAME == "Admin")
+            {
+                playerID = player.ID;
+                playfield.playerID = playerID;
+                world.Players.Add(player.ID, player);
+            }
+ 
 
-      
-               Networking.await_more_data(server);
+            Networking.await_more_data(server);
         }
 
 
@@ -160,48 +170,55 @@ namespace ViewController
 
 
             Circle circle = new Circle();
-            try
+            lock (playfield.world)
             {
-                circle = JsonConvert.DeserializeObject<Circle>(state.Message);
-
-                switch (circle.TYPE)
+                try
                 {
-                    case 0:
-                        if (world.Food.TryGetValue(circle.ID, out Circle newCircle))
-                        {
 
-                            world.Food.Remove(circle.ID);
+                    circle = JsonConvert.DeserializeObject<Circle>(state.Message);
+
+                    switch (circle.TYPE)
+                    {
+                        case 0:
+                            if (world.Food.TryGetValue(circle.ID, out Circle newCircle))
+                            {
+
+                                world.Food.Remove(circle.ID);
+                                world.Food.Add(circle.ID, circle);
+
+
+                                newCircle = circle;
+                            }
+
                             world.Food.Add(circle.ID, circle);
 
+                            break;
 
-                            newCircle = circle;
-                        }
+                        case 1:
+                            if (world.Players.TryGetValue(circle.ID, out newCircle))
+                            {
+                                world.Players.Remove(circle.ID);
+                                world.Players.Add(circle.ID, circle);
+                            }
+                            else
+                            {
+                                world.Players.Add(circle.ID, circle);
+                            }
 
-                        world.Food.Add(circle.ID, circle);
-
-                        break;
-
-                    case 1:
-                        if (world.Players.TryGetValue(circle.ID, out newCircle))
-                        {
-                            world.Players.Remove(circle.ID);
+                            // logger?.LogInformation("Logged: " + circle.NAME + " " + circle.LOC.ToString());
+                            break;
+                        case 2:
+                            logger.LogInformation("HEARTBEAT");
+                            DataArrived();
+                            break;
+                        case 3:
                             world.Players.Add(circle.ID, circle);
-                        }
-                        else
-                        {
-                            world.Players.Add(circle.ID, circle);
-                        }
+                            break;
+                    }
 
-                        logger?.LogInformation("Logged: " + circle.NAME + " " + circle.LOC.ToString());
-                        break;
-                    case 2:
-                        logger.LogInformation("HEARTBEAT");
-                        DataArrived();
-                        break;
                 }
+                catch (Exception e) { logger.LogError("Incorrect Format for circle: " + e.Message); }
             }
-            catch (Exception e) { logger.LogError("Incorrect Format for circle: " + e.Message); }
-
 
             if (!server.Has_More_Data())
             {
@@ -222,8 +239,6 @@ namespace ViewController
         float mouseY = 0;
         int x = 0;
         int y = 0;
-        internal static int scaleX;
-        internal static readonly int scaleY;
 
         private void On_Move(object sender, MouseEventArgs e)
         {
@@ -234,52 +249,35 @@ namespace ViewController
                 y = (int)player.LOC.Y;
                 CalculateMove(player, e);
             }
-            
+
 
 
         }
 
         private void CalculateMove(Circle c, MouseEventArgs e)
         {
-            double moveSpeed = c.MASS / 80;
 
-            if (e.X != 0 && e.Y != 0 && !(server is null) && !(world.Players is null))
+
+            if (!(server is null) && !(world.Players is null))
             {
-                if (e.X < (playfield.Size.Width / 2))
+                if (e.X <= (playfield.Size.Width / 2))
                 {
-                    mouseX = -(200-(int)moveSpeed);
+                    mouseX = x - 500;
                 }
                 else
                 {
-                    mouseX = (200-(int)moveSpeed);
+                    mouseX = x + 500;
                 }
-                if (e.Y < (playfield.Size.Height / 2))
+                if (e.Y <= (playfield.Size.Height / 2))
                 {
-                    mouseY = -(200-(int)moveSpeed);
+                    mouseY = y - 500;
                 }
                 else
                 {
-                    mouseY = (200-(int)moveSpeed);
+                    mouseY = y + 500;
                 }
 
 
-                if (y + mouseY == world.WORLDSIZE)
-                {
-                    mouseY -= 59;
-                }
-                else if (y - mouseY == 0)
-                {
-                    mouseY += 59;
-
-                }
-                if (x + mouseX == world.WORLDSIZE)
-                {
-                    mouseX -= 59;
-                }
-                else if (x - mouseX == 0)
-                {
-                    mouseX += 59;
-                }
 
             }
         }

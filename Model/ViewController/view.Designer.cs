@@ -98,10 +98,13 @@ namespace ViewController
 
             //NAME
             box.Controls.Add(name);
+            box.Controls.Add(namelabel);
 
+            namelabel.Text = "Username: ";
+            namelabel.Location = new Point(380, 33);
             name.Size = new System.Drawing.Size(100, 70);
             name.Location = new System.Drawing.Point(450, 31);
-            box.Controls.Add(namelabel);
+           
 
             this.status.Location = new System.Drawing.Point(810, 60);
             this.status.Size = new System.Drawing.Size(180, 900);
