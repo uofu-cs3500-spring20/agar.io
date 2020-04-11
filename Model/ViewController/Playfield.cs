@@ -12,8 +12,12 @@ namespace ViewController
 {
     public partial class Playfield : Panel
     {
-        private bool playing = false;
+        private MethodInvoker m;
         private float oldMass = 50f;
+        public int rendered
+        {
+            get; set;
+        }
         public World world;
         private SoundPlayer soundPlayer;
         public string username;
@@ -27,16 +31,17 @@ namespace ViewController
         Size imageSize;
         public Playfield(World world)
         {
+            rendered = 1;
             this.DoubleBuffered = true;
             this.world = world;
             soundPlayer = new SoundPlayer(AppDomain.CurrentDomain.BaseDirectory + "Minecraft-eat3.wav");
-
+            soundPlayer.Load();
         }
         protected override void OnPaint(PaintEventArgs e)
-        {
+        {       
 
+            rendered++;
 
-            // Invalidate(true);
             imageSize = this.Size;
             if (!(world.Players is null) && world.WORLDSIZE > 0)
             {
@@ -63,12 +68,18 @@ namespace ViewController
                          playerX = 2500 * ratio * scaleX;
                          playerY = 2500 * ratio * scaleY;
                     }
-                    float playerOriginX = -(float)(playerX) + (imageSize.Width / 2) - (player.RADIUS / 2);
-                    float playerOriginY = -(float)(playerY) + (imageSize.Height / 2) - (player.RADIUS / 2);
+                    float playerOriginX = -(float)(playerX) + (imageSize.Width / 2);
+                    float playerOriginY = -(float)(playerY) + (imageSize.Height / 2);
 
                     e.Graphics.TranslateTransform(playerOriginX, playerOriginY);
                     DrawBorder(e, world.WORLDSIZE * ratio * scaleY + 10);
 
+                    if (player.MASS > oldMass)
+                    {
+                        m = new MethodInvoker(()=> soundPlayer.Play());
+                        Invoke(m);
+                        oldMass = (float)player.MASS;
+                    }
                     if (player.MASS == 0)
                     {
 
@@ -83,12 +94,7 @@ namespace ViewController
 
                     }
                    
-                    if (player.MASS > oldMass && !playing)
-                    {
-                        playing = true;
-                        soundPlayer.Play();
-                    }
-                    oldMass = (float)player.MASS;
+                    
                    lock (this.world)
                     {
                       
@@ -115,13 +121,10 @@ namespace ViewController
                                 DrawPlayers(c, e);
                         }
                     }
-                    
 
-
+                    Invalidate(true);
                 }
             }
-            playing = false;
-            base.OnPaint(e);
         }
 
         private void DrawBorder(PaintEventArgs e, double size)
@@ -142,10 +145,11 @@ namespace ViewController
             using Pen pen = new Pen(col);
             Brush b = pen.Brush;
             Brush d = Brushes.Black;
+           
+            e.Graphics.DrawString($"{c.NAME}", f, b, new Rectangle(new Point((int)((c.LOC.X - (c.RADIUS / 2)) * ratio * scaleX), (int)((c.LOC.Y - (c.RADIUS / 2)) * ratio * scaleY) - (int)(c.RADIUS / 2) - 10), new Size((int)(c.NAME.Length*12 * ratio * scaleY), (int)(20 * ratio * scaleY))));
             e.Graphics.DrawEllipse(new Pen(Color.Black, 2.2f), new Rectangle(new Point((int)((c.LOC.X - (c.RADIUS / 2)) * ratio * scaleX), (int)((c.LOC.Y - (c.RADIUS / 2)) * ratio * scaleY)), new Size((int)(c.RADIUS * ratio * scaleY), (int)(c.RADIUS * ratio * scaleY))));
             e.Graphics.FillEllipse(b, new Rectangle(new Point((int)((c.LOC.X - (c.RADIUS / 2)) * ratio * scaleX), (int)((c.LOC.Y - (c.RADIUS / 2)) * ratio * scaleY)), new Size((int)(c.RADIUS * ratio * scaleY), (int)(c.RADIUS * ratio * scaleY))));
-            e.Graphics.DrawString($"{username}", f, b, new RectangleF(new Point((int)(circle.LOC.X - (circle.RADIUS / 1.2)),
-                (int)(circle.LOC.Y - (circle.RADIUS / 1.2) * scaleY - 50)), new Size(100, 11)));
+          
         }
         public void DrawFood(Circle c, PaintEventArgs e)
         {

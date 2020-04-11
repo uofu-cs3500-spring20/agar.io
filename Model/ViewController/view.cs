@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
@@ -14,6 +15,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 
 namespace ViewController
 {
@@ -30,6 +32,10 @@ namespace ViewController
         private event ServerUpdateHandler DataArrived;
         public int sX;
         public int sY;
+        private int fpsCount;
+        private int HBcount;
+        private int MScount;
+        private DateTime time;
 
         public view(ILogger logger)
         {
@@ -85,21 +91,26 @@ namespace ViewController
                 }
                 moveCommands = $"(move,{mouseX},{mouseY})";
                 logger.LogInformation(moveCommands);
-
-
             }
 
             try
             {
                 MethodInvoker m = new MethodInvoker(() => { Invalidate(true); });
+
                 Invoke(m);
+                CalculateFPSAndMS();
 
                 m = new MethodInvoker(updateStatusBox);
-
                 Invoke(m);
 
             }
             catch { }
+        }
+        private void CalculateFPSAndMS()
+        {
+            fpsCount = (int)(playfield.rendered / ((DateTime.Now - time).TotalSeconds));
+            MScount = (int)(HBcount / ((DateTime.Now - time).TotalSeconds));
+
         }
         private void updateStatusBox()
         {
@@ -108,6 +119,9 @@ namespace ViewController
             {
                 this.mass.Text = "MASS: " + (int)c.MASS;
                 this.position.Text = $"Loc: X: {(int)c.LOC.X} Y: {(int)c.LOC.Y}";
+                this.ms.Text = $"MS: {MScount}";
+
+                this.fps.Text = $"FPS: {(int)(fpsCount)}";
             }
             else
             {
@@ -124,6 +138,13 @@ namespace ViewController
 
         public void OnConnect(Preserved_Socket_State state)
         {
+            if (!state.socket.Connected)
+            {
+                MethodInvoker m = new MethodInvoker(()=> connectbutton.Enabled = true);
+                Invoke(m);
+                state = null;
+                return;
+            }
 
 
             if (state.error_occured)
@@ -158,8 +179,8 @@ namespace ViewController
                 playfield.playerID = playerID;
                 world.Players.Add(player.ID, player);
             }
- 
 
+            time = DateTime.Now;
             Networking.await_more_data(server);
         }
 
@@ -170,55 +191,66 @@ namespace ViewController
 
 
             Circle circle = new Circle();
-            lock (playfield.world)
+
+            try
             {
-                try
+
+                circle = JsonConvert.DeserializeObject<Circle>(state.Message);
+
+                switch (circle.TYPE)
                 {
 
-                    circle = JsonConvert.DeserializeObject<Circle>(state.Message);
-
-                    switch (circle.TYPE)
-                    {
-                        case 0:
-                            if (world.Food.TryGetValue(circle.ID, out Circle newCircle))
+                    case 0:
+                        if (world.Food.TryGetValue(circle.ID, out Circle newCircle))
+                        {
+                            lock (world)
                             {
-
                                 world.Food.Remove(circle.ID);
                                 world.Food.Add(circle.ID, circle);
 
-
-                                newCircle = circle;
                             }
-
+                        }
+                        lock (world)
+                        {
                             world.Food.Add(circle.ID, circle);
+                        }
+                        break;
 
-                            break;
-
-                        case 1:
-                            if (world.Players.TryGetValue(circle.ID, out newCircle))
+                    case 1:
+                        if (world.Players.TryGetValue(circle.ID, out newCircle))
+                        {
+                            lock (world)
                             {
                                 world.Players.Remove(circle.ID);
                                 world.Players.Add(circle.ID, circle);
                             }
-                            else
+                        }
+                        else
+                        {
+                            lock (world)
                             {
                                 world.Players.Add(circle.ID, circle);
                             }
+                        }
 
-                            // logger?.LogInformation("Logged: " + circle.NAME + " " + circle.LOC.ToString());
-                            break;
-                        case 2:
-                            logger.LogInformation("HEARTBEAT");
-                            DataArrived();
-                            break;
-                        case 3:
+                        // logger?.LogInformation("Logged: " + circle.NAME + " " + circle.LOC.ToString());
+                        break;
+                    case 2:
+                        logger.LogInformation("HEARTBEAT");
+                        HBcount++;
+                        DataArrived();
+                        break;
+                    case 3:
+                        lock (world)
+                        {
                             world.Players.Add(circle.ID, circle);
-                            break;
-                    }
-
+                        }
+                        break;
                 }
-                catch (Exception e) { logger.LogError("Incorrect Format for circle: " + e.Message); }
+
             }
+            catch (Exception e) { logger.LogError("Incorrect Format for circle: " + e.Message); }
+
 
             if (!server.Has_More_Data())
             {
