@@ -33,7 +33,7 @@ namespace ViewController
         Label position;
 
         Playfield playfield;
-
+        Label leaderBoardLabel;
         GroupBox status;
         GroupBox box;
         /// <summary>
@@ -57,7 +57,7 @@ namespace ViewController
         /// </summary>
         private void InitializeComponent()
         {
-
+            this.leaderBoardLabel = new Label();
             this.ipaddress = new TextBox();
             this.ipaddresslabel = new Label();
             this.portlabel = new Label();
@@ -68,7 +68,7 @@ namespace ViewController
             this.ms = new Label();
             this.mass = new Label();
             this.position = new Label();
-            
+            this.food = new Label();
             this.status = new GroupBox();
             this.box = new GroupBox();
             this.connectbutton = new Button()
@@ -111,7 +111,13 @@ namespace ViewController
             status.Controls.Add(ms);
             status.Controls.Add(mass);
             status.Controls.Add(fps);
+            status.Controls.Add(food);
             status.Controls.Add(position);
+
+            status.Controls.Add(leaderBoardLabel);
+            //TODO
+         //   leaderBoardLabel.Text = "Leaderboard";
+           // leaderBoardLabel.Location = new Point(50, 130);
 
             Font statusFont = new Font(FontFamily.GenericSansSerif,10);
             fps.Font = statusFont;
@@ -131,6 +137,12 @@ namespace ViewController
             mass.Size = new Size(200, 20);
             mass.Text = "Mass: ";
             mass.Visible = true;
+
+            food.Font = statusFont;
+            food.Location = new Point(50, 130);
+            food.Size = new Size(200, 20);
+            food.Text = "Food: ";
+            food.Visible = true;
 
             position.Font = statusFont;
             position.Location = new Point(20, 90);

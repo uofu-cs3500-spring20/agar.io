@@ -33,8 +33,8 @@ namespace ViewController
             using ServiceProvider serviceProvider = services.BuildServiceProvider();
 
             ILogger logger = serviceProvider?.GetRequiredService<ILogger<view>>();
-            view view = new view(logger);
-            Application.Run(view);
+            Application.Run(new view(logger));
+           
         }
     }
 }

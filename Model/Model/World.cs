@@ -19,6 +19,7 @@ namespace Model
             
         }
 
+
         public Dictionary<int, Circle> Players;
         public Dictionary<int, Circle> Food;
         public Dictionary<int, Heartbeat> Heartbeat;
@@ -27,7 +28,12 @@ namespace Model
         ILogger logger;
         public int playerID;
 
-        public World() { WORLDSIZE = 5000; }
+        public World() { WORLDSIZE = 5000;
+            Players = new Dictionary<int, Circle>();
+            Food = new Dictionary<int, Circle>();
+            Heartbeat = new Dictionary<int, Heartbeat>();
+        
+        }
         public World(ILogger logger, Dictionary<int, Circle> Players,Dictionary<int,Circle> Food)
         {
            
@@ -61,9 +67,20 @@ namespace Model
             return this.Players;
         }
 
-        public Dictionary<int, Circle> GetFood()
+        public int GetFood()
         {
-            return this.Food;
+            int availableFood = 0;
+            lock (this)
+            {
+                foreach (Circle c in Food.Values)
+                {
+                    if (c.MASS > 0)
+                    {
+                        availableFood++;
+                    }
+                }
+            }
+            return availableFood;
         }
     }
 }

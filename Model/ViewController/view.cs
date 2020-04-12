@@ -10,9 +10,11 @@ using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Media;
 using System.Numerics;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
@@ -35,27 +37,45 @@ namespace ViewController
         private int fpsCount;
         private int HBcount;
         private int MScount;
+        private int eatenFood;
+        float mouseX = 0;
+        float mouseY = 0;
+        int x = 0;
+        int y = 0;
         private DateTime time;
 
         public view(ILogger logger)
         {
 
             this.logger = logger;
-            world = new World();
-            world.Players = new Dictionary<int, Circle>();
-            world.Food = new Dictionary<int, Circle>();
+            world = new World
+            {
+                Players = new Dictionary<int, Circle>(),
+                Food = new Dictionary<int, Circle>()
+            };
             InitializeComponent();
             RegisterServerUpdate(Frame);
+            BuildPlayField();
+
+        }
+
+        private void BuildPlayField()
+        {
             playfield = new Playfield(world);
             this.playfield.Location = new Point(10, 70);
             this.playfield.Size = new Size(804, 804);
             this.playfield.MouseMove += new MouseEventHandler(On_Move);
             this.playfield.PreviewKeyDown += Playfield_PreviewKeyDown;
+            this.playfield.Death += Playfield_death;
             this.playfield.MouseWheel += Playfield_MouseWheel;
             this.playfield.BorderStyle = BorderStyle.Fixed3D;
             this.Controls.Add(playfield);
             this.playfield.Focus();
+        }
 
+        private void Playfield_death()
+        {
+            HandleDisconnect();
         }
 
         private void Playfield_MouseWheel(object sender, MouseEventArgs e)
@@ -80,7 +100,7 @@ namespace ViewController
         private void Frame()
         {
 
-            if (moveCommands.Length > 0)
+            if (moveCommands.Length > 0 && username != "Admin" && username != "admin")
             {
 
                 Networking.Send(server.socket, moveCommands.ToString());
@@ -120,7 +140,7 @@ namespace ViewController
                 this.mass.Text = "MASS: " + (int)c.MASS;
                 this.position.Text = $"Loc: X: {(int)c.LOC.X} Y: {(int)c.LOC.Y}";
                 this.ms.Text = $"MS: {MScount}";
-
+                this.food.Text = $"Food: {eatenFood}";
                 this.fps.Text = $"FPS: {(int)(fpsCount)}";
             }
             else
@@ -131,7 +151,8 @@ namespace ViewController
         }
         private void ConnectToServer(string ip, string name)
         {
-            playfield.BackColor = Color.White;
+            playfield.BackColor = Color.FromArgb(209,245,255);
+            
             Networking.Connect_to_Server(OnConnect, ip);
 
         }
@@ -140,7 +161,10 @@ namespace ViewController
         {
             if (!state.socket.Connected)
             {
-                MethodInvoker m = new MethodInvoker(()=> connectbutton.Enabled = true);
+                MethodInvoker m = new MethodInvoker(() => {
+                    DialogResult failedToConnect = MessageBox.Show($"Failed to connect to {ipaddress.Text}, please check the address and try again.","agar.io Helper",MessageBoxButtons.OK,MessageBoxIcon.Warning);
+                    connectbutton.Enabled = true;
+                });
                 Invoke(m);
                 state = null;
                 return;
@@ -150,8 +174,14 @@ namespace ViewController
             if (state.error_occured)
             {
                 connectbutton.Enabled = true;
+                MethodInvoker m = new MethodInvoker(() => {
+                    DialogResult failedToConnect = MessageBox.Show($"Failed to connect to {ipaddress.Text}, please check the address and try again.", "agar.io Helper", MessageBoxButtons.OK);
+                    connectbutton.Enabled = true;
+                });
+                Invoke(m);
                 return;
             }
+          
             server = state;
             server.on_data_received_handler = Startup;
             Networking.Send(server.socket, username + '\n');
@@ -160,6 +190,7 @@ namespace ViewController
 
         public void Startup(Preserved_Socket_State state)
         {
+            availableFood = 0;
             server.on_data_received_handler = DataReceived;
             MethodInvoker m = new MethodInvoker(() => this.playfield.Focus());
             Invoke(m);
@@ -182,13 +213,18 @@ namespace ViewController
 
             time = DateTime.Now;
             Networking.await_more_data(server);
+            
         }
 
 
 
         private void DataReceived(Preserved_Socket_State state)
         {
-
+            if (Disconnected(server))
+            {
+                HandleDisconnect();
+                return;
+            }
 
             Circle circle = new Circle();
 
@@ -203,11 +239,13 @@ namespace ViewController
                     case 0:
                         if (world.Food.TryGetValue(circle.ID, out Circle newCircle))
                         {
+                            if (newCircle.MASS > 0)
+                                eatenFood++;
                             lock (world)
                             {
                                 world.Food.Remove(circle.ID);
                                 world.Food.Add(circle.ID, circle);
-
+                                
                             }
                         }
                         lock (world)
@@ -259,23 +297,45 @@ namespace ViewController
             }
         }
 
+        private void HandleDisconnect()
+        {
+            MethodInvoker m = new MethodInvoker(() => {
 
 
+                connectbutton.Enabled = true;
+                server = null;
+                playfield.Dispose();
+                world = new World
+                {
+                    Players = new Dictionary<int, Circle>(),
+                    Food = new Dictionary<int, Circle>()
+                };
+                BuildPlayField();
+                Invalidate(true);
+            });
+            Invoke(m);
+
+        }
+        private bool Disconnected(Preserved_Socket_State state)
+        {
+            if (state.socket.Connected)
+            {
+                return false;
+            }
+            return true;
+        }
 
 
         public void RegisterServerUpdate(ServerUpdateHandler handler)
         {
             DataArrived += handler;
         }
-        float mouseX = 0;
-        float mouseY = 0;
-        int x = 0;
-        int y = 0;
+
 
         private void On_Move(object sender, MouseEventArgs e)
         {
-
-            if (world.Players.TryGetValue((int)playerID, out Circle player))
+             
+            if (!(world?.Players is null) && (world.Players.TryGetValue((int)playerID, out Circle player)))
             {
                 x = (int)player.LOC.X;
                 y = (int)player.LOC.Y;
