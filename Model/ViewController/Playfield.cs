@@ -50,8 +50,7 @@ namespace ViewController
 
         //Sound stuff
         private SoundPlayer eatSound;
-        SoundPlayer deathSound;
-
+        private SoundPlayer deathSound;
         //Initial scale size
         public float scaleX = 5;
         public float scaleY = 5;
@@ -68,6 +67,7 @@ namespace ViewController
             this.world = world;
             eatSound = new SoundPlayer(AppDomain.CurrentDomain.BaseDirectory + "Minecraft-eat3.wav");
             deathSound = new SoundPlayer(AppDomain.CurrentDomain.BaseDirectory + "Roblox-death-sound.wav");
+           
             deathSound.Load();
             eatSound.Load();
         }
@@ -81,6 +81,8 @@ namespace ViewController
         /// <param name="e">The paint event</param>
         protected override void OnPaint(PaintEventArgs e)
         {
+           
+
             rendered++;
             imageSize = this.Size;
 
@@ -118,13 +120,13 @@ namespace ViewController
                     //Draw grid
                     DrawGridLines(e);
 
-                    //Handle eat sounds
-                    if (player.MASS > oldMass)
-                    {
-                        m = new MethodInvoker(() => eatSound.Play());
-                        Invoke(m);
-                        oldMass = (float)player.MASS;
-                    }
+                  //Handle eat sounds
+                  //  if (player.MASS > oldMass)
+                  //  {
+                  // m = new MethodInvoker(() => eatSound.Play());
+                  // Invoke(m);
+                  //  oldMass = (float)player.MASS;
+                  //  }
 
                     //Handle death
                     if (player.MASS == 0)

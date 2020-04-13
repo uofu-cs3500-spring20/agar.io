@@ -45,10 +45,13 @@ namespace ViewController
         private string username;
         private int playerID;
         private World world;
-       
+        private SoundPlayer bgMusic;
+        private bool bgMusicPlaying = false;
+
+
         //Player commands
         private string moveCommands = $"(move,1,1)";
-        private string splitCommands = $"";
+        private string splitCommands = $"(split,1,1)";
        
         //Player movement calculations.
         public int zoomX;
@@ -76,6 +79,8 @@ namespace ViewController
                 Players = new Dictionary<int, Circle>(),
                 Food = new Dictionary<int, Circle>()
             };
+            bgMusic = new SoundPlayer(AppDomain.CurrentDomain.BaseDirectory + "bgmusic.wav");
+            bgMusic.Load();
             InitializeComponent();
             RegisterServerUpdate(Frame);
             BuildPlayField();
@@ -131,7 +136,7 @@ namespace ViewController
             {
                 splitting = true;
                 splitCommands = $"(split,{mouseX},{mouseY})";
-            }
+            }          
         }
 
        /// <summary>
@@ -244,6 +249,9 @@ namespace ViewController
                 return;
             }
 
+               
+
+
             //If everything went well, begin the server loop.
             server = state;
             server.on_data_received_handler = Startup;
@@ -274,7 +282,7 @@ namespace ViewController
                 playfield.playerID = playerID;
                 world.Players.Add(player.ID, player);
             }
-
+            bgMusic.PlayLooping();
             //Misc Setup
             eatenFood = 0;
             time = DateTime.Now;
