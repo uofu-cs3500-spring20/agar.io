@@ -1,10 +1,23 @@
-﻿using System;
+﻿/// <summary> 
+/// Author:    Gabriel Job && CS 3500 staff 
+/// Partner:   N/A
+/// Date:      4/13/20
+/// Course:    CS 3500, University of Utah, School of Computing 
+/// Copyright: CS 3500 and Gabe - This work may not be copied for use in Academic Coursework. 
+/// 
+/// I, Gabe, certify that I wrote this code from scratch and did not copy it in part or whole from  
+/// another source.  All references used in the completion of the assignment are cited in my README file. 
+/// </summary>
+/// 
+using System;
 using System.Drawing;
 using System.Drawing.Text;
 using System.Windows.Forms;
 
 namespace ViewController
 {
+    /// <summary>
+    /// Class desine/summary>
     partial class view
     {
         /// <summary>
@@ -92,8 +105,10 @@ namespace ViewController
             box.Controls.Add(ipaddress);
             ipaddress.Size = new System.Drawing.Size(100,70);
             ipaddress.Text = "127.0.0.1";
-            ipaddress.Location = new System.Drawing.Point(130,31);
+            ipaddress.Location = new System.Drawing.Point(220,31);
             box.Controls.Add(ipaddresslabel);
+            ipaddresslabel.Location = new Point(130, 33);
+            ipaddresslabel.Text = "Server Address:";
 
 
             //NAME
@@ -104,7 +119,9 @@ namespace ViewController
             namelabel.Location = new Point(380, 33);
             name.Size = new System.Drawing.Size(100, 70);
             name.Location = new System.Drawing.Point(450, 31);
-           
+
+
+            //Right hand status box
 
             this.status.Location = new System.Drawing.Point(810, 60);
             this.status.Size = new System.Drawing.Size(180, 900);
@@ -114,10 +131,9 @@ namespace ViewController
             status.Controls.Add(food);
             status.Controls.Add(position);
 
+            //TODO: add leaderboard
             status.Controls.Add(leaderBoardLabel);
-            //TODO
-         //   leaderBoardLabel.Text = "Leaderboard";
-           // leaderBoardLabel.Location = new Point(50, 130);
+         
 
             Font statusFont = new Font(FontFamily.GenericSansSerif,10);
             fps.Font = statusFont;
@@ -139,29 +155,21 @@ namespace ViewController
             mass.Visible = true;
 
             food.Font = statusFont;
-            food.Location = new Point(50, 130);
+            food.Location = new Point(30, 90);
             food.Size = new Size(200, 20);
             food.Text = "Food: ";
             food.Visible = true;
 
             position.Font = statusFont;
-            position.Location = new Point(20, 90);
+            position.Location = new Point(20, 110);
             position.Size = new Size(200, 20);
             position.Text = "Loc: X:0 Y:0 ";
             position.Visible = true;
 
-
-            this.components = new System.ComponentModel.Container();
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1000, 900);
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "agar.io";
-            this.status.SuspendLayout();
-            this.box.SuspendLayout();
-            this.SuspendLayout();
+       
 
 
-
+            //Top group box
             this.box.Location = new System.Drawing.Point(10, 0);
             this.box.Name = "box";
             this.box.Size = new System.Drawing.Size(980, 70);
@@ -172,23 +180,18 @@ namespace ViewController
             this.connectbutton.MouseClick += new MouseEventHandler(ConnectButton_Click);
 
 
-        
-            
-
-           
-
-            this.AutoScaleMode = AutoScaleMode.Dpi;
+            //Setup form
+            this.components = new System.ComponentModel.Container();
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(1000, 900);
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "agar.io";
+            this.status.SuspendLayout();
+            this.box.SuspendLayout();
+            this.SuspendLayout();
             this.DoubleBuffered = true;
             
         }
-
-     
-
-
-
-
-
-
 
 
 
