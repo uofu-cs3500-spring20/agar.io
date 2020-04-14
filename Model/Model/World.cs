@@ -98,7 +98,7 @@ namespace Model
         public int GetFood()
         {
             int availableFood = 0;
-            lock (this)
+            try
             {
                 foreach (Circle c in Food.Values)
                 {
@@ -107,8 +107,9 @@ namespace Model
                         availableFood++;
                     }
                 }
+                return availableFood;
             }
-            return availableFood;
+            catch { return 0; }
         }
     }
 }

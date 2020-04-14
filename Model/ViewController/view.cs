@@ -132,32 +132,39 @@ namespace ViewController
        /// <param name="e"></param>
        private void Playfield_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
-            if (e.KeyCode == Keys.Space)
+            if (e.KeyCode == Keys.Space && !splitting)
             {
                 splitting = true;
                 splitCommands = $"(split,{mouseX},{mouseY})";
-            }          
+            }
+            
         }
 
-       /// <summary>
-       /// Where the magic happens...
-       /// 
-       /// Method to send invalidate to our playfield.
-       /// </summary>
-       private void Frame()
+        /// <summary>
+        /// Where the magic happens...
+        /// 
+        /// Method to send invalidate to our playfield.
+        /// </summary>
+        private void Frame()
         {
             if (moveCommands.Length > 0 && username != "Admin" && username != "admin")
             {
-                Networking.Send(server.socket, moveCommands.ToString());
+               
 
                 //Don't spam the server with splitting messages
                 if (splitting)
                 {
-                    Networking.Send(server.socket, splitCommands.ToString());
                     splitting = false;
+                    Networking.Send(server.socket, splitCommands);
+                    
                 }
-                moveCommands = $"(move,{mouseX},{mouseY})";
-                logger.LogInformation(moveCommands);
+                else
+                {
+                    Networking.Send(server.socket, moveCommands);
+                    moveCommands = $"(move,{mouseX},{mouseY})";
+                    logger.LogInformation(moveCommands);
+                }
+           
             }
 
             try

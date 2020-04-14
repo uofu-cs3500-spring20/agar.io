@@ -3,14 +3,14 @@ Partner:    N/A
 Date:       3/13/20
 Course:     CS 3500, University of Utah, School of Computing
 GitHub ID:  gabejob
-Commit ID: 51fdaf671be2d5f1cdf94029cc39cec3e3dede18
+Commit ID: 
 Repo:       https://github.com/uofu-cs3500-spring20/assignment-seven-logging-and-networking-gibs
 Assignment: Assignment # - A8 Agario
 Copyright:  CS 3500 and Gabe- This work may not be copied for use in Academic Coursework.
 
 1. Comments to Evaluators:
 
-**KNOWN BUGS**
+**KNOWN BUGS** =>Did not receive reply on, bugs a direct result of using new server/networking dll's
 -Player jittering
 -Freeze upon holding space bar to split.
 
@@ -32,6 +32,15 @@ Design choices:
 
 I decided to keep the area where the actual gameplay happens seperate from the rest of my GUI, this allowed for easier coordinate transfer 
 and a bit more abstraction, I used multiple different events to trace communication between that and my GUI class.
+
+I felt I followed DRY really well in this assignment, making quite a few helper methods that resulted in cleaner bug free code. I do feel that
+I could've seperated the projects into even smaller compenents, but alas, time constraints.
+
+Testing:
+
+For testing I felt it increasingly effective to just simply run manual UI tests, including having my little brother attempt to play (and break) the game.
+I think unit tests *could* be used to better ensure the quality of the code, but I felt if everything was displaying correctly; 
+there probably wasn't any critical bugs.
 
 
 2.5. Time keeping
